@@ -5,13 +5,14 @@
 
 #define GRASS 0
 #define WATER 1
-#define NENUPHAR 2
-#define WALL 3
+#define DIRT 2
+#define SAND 3
 #define STONE 4
-#define CHEST 5
-#define DIRT 6
-#define SAND 7
-#define LAVA 8
+#define LAVA 5
+
+#define NENUPHAR 6
+#define WALL 7
+#define CHEST 8
 #define VOID 9
 
 typedef struct Map
