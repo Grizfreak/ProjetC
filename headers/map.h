@@ -14,15 +14,15 @@
 #define LAVA 8
 #define VOID 9
 
-typedef struct Map {
+typedef struct Map
+{
     int width;
     int height;
     int **data;
 } Map;
 
-
-
 void displayMap(Map *map);
 void displayMapWithPlayer(Map *map, Player *player);
+void displayMapWithoutBars(Map *map);
 void generateMap(Map *map, int width, int height);
 void freeMap(Map *map);
