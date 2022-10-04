@@ -8,7 +8,7 @@ void displayMap(Map *map)
     {
         for (int j = 0; j < map->width; j++)
         {
-            switch (map->data[i][j])
+            switch (map->data[i][j].value)
             {
             case VOID:
                 printf("| X |");
@@ -41,7 +41,7 @@ void displayMap(Map *map)
                 printf("\033[91m| ≈ |\033[0m");
                 break;
             default:
-                printf("| %d |", map->data[i][j]);
+                printf("| %d |", map->data[i][j].value);
                 break;
             }
             endofline++;
@@ -62,7 +62,7 @@ void displayMapWithoutBars(Map *map)
     {
         for (int j = 0; j < map->width; j++)
         {
-            switch (map->data[i][j])
+            switch (map->data[i][j].value)
             {
             case VOID:
                 printf("X ");
@@ -98,7 +98,7 @@ void displayMapWithoutBars(Map *map)
                 printf(" P");
                 break;
             default:
-                printf("%d ", map->data[i][j]);
+                printf("%d ", map->data[i][j].value);
                 break;
             }
             endofline++;
@@ -111,7 +111,7 @@ void displayMapWithoutBars(Map *map)
     }
 }
 
-void displayMapWithPlayer(Map *map, Player *player)
+void displayMapWithPlayer(Map *map)
 {
     int blockToRewind = map->data[player->coordX][player->coordY];
     map->data[player->coordX][player->coordY] = PLAYER;
@@ -124,10 +124,10 @@ void generateMap(Map *map, int width, int height)
     srand(time(NULL));
     map->width = width + 1;
     map->height = height + 1;
-    map->data = malloc(sizeof(int *) * map->height);
-    for (int i = 0; i < map->height; i++)
+    map->data = malloc(sizeof(Block *) * map->width);
+    for (int i = 0; i < map->width; i++)
     {
-        map->data[i] = malloc(sizeof(int) * map->width);
+        map->data[i] = malloc(sizeof(Block) * map->height);
     }
     // Print X at all the edges of map
     for (int i = 0; i < map->height; i++)
@@ -136,7 +136,9 @@ void generateMap(Map *map, int width, int height)
         {
             if (i == 0 || i == map->height - 1 || j == 0 || j == map->width - 1)
             {
-                map->data[i][j] = VOID;
+                map->data[i][j].value = VOID;
+                map->data[i][j].isWalkable = 0;
+                map->data[i][j].isVisited = 1;
             }
         }
     }
@@ -144,7 +146,11 @@ void generateMap(Map *map, int width, int height)
     for (int i = 1; i < map->height - 1; i++)
     {
         for (int j = 1; j < map->width - 1; j++)
-            map->data[i][j] = GRASS;
+        {
+            map->data[i][j].value = GRASS;
+            map->data[i][j].isWalkable = 1;
+            map->data[i][j].isVisited = 0;
+        }
     }
     // Creating variations
 
@@ -154,40 +160,52 @@ void generateMap(Map *map, int width, int height)
     {
         for (int j = 1; j < map->width - 1; j++)
         {
-            if (map->data[i][j] == GRASS)
+            if (map->data[i][j].value == GRASS)
             {
                 if (rand() % 100 < 2)
                 {
-                    map->data[i][j] = WATER;
-                    if (map->data[i + 1][j] != VOID)
+                    map->data[i][j].value = WATER;
+                    map->data[i][j].isWalkable = 0;
+                    map->data[i][j].isVisited = 0;
+                    if (map->data[i + 1][j].value != VOID)
                     {
-                        map->data[i + 1][j] = WATER;
+                        map->data[i + 1][j].value = WATER;
+                        map->data[i][j].isWalkable = 0;
+                        map->data[i][j].isVisited = 0;
                         tab[1]++;
                         tab[0]--;
                     }
-                    if (map->data[i - 1][j] != VOID)
+                    if (map->data[i - 1][j].value != VOID)
                     {
-                        map->data[i - 1][j] = WATER;
+                        map->data[i - 1][j].value = WATER;
+                        map->data[i][j].isWalkable = 0;
+                        map->data[i][j].isVisited = 0;
                         tab[1]++;
                         tab[0]--;
                     }
-                    if (map->data[i][j + 1] != VOID)
+                    if (map->data[i][j + 1].value != VOID)
                     {
-                        map->data[i][j + 1] = WATER;
+                        map->data[i][j + 1].value = WATER;
+                        map->data[i][j].isWalkable = 0;
+                        map->data[i][j].isVisited = 0;
                         tab[1]++;
                         tab[0]--;
                     }
-                    if (map->data[i][j - 1] != VOID)
+                    if (map->data[i][j - 1].value != VOID)
                     {
-                        map->data[i][j - 1] = WATER;
+                        map->data[i][j - 1].value = WATER;
+                        map->data[i][j].isWalkable = 0;
+                        map->data[i][j].isVisited = 0;
                         tab[1]++;
                         tab[0]--;
                     }
                     if (rand() % 100 < 50)
                     {
-                        if (map->data[i + 1][j + 1] != VOID)
+                        if (map->data[i + 1][j + 1].value != VOID)
                         {
-                            map->data[i + 1][j + 1] = WATER;
+                            map->data[i + 1][j + 1].value = WATER;
+                            map->data[i][j].isWalkable = 0;
+                            map->data[i][j].isVisited = 0;
                             tab[1]++;
                             tab[0]--;
                         }
@@ -202,40 +220,52 @@ void generateMap(Map *map, int width, int height)
     {
         for (int j = 1; j < map->width - 1; j++)
         {
-            if (map->data[i][j] == GRASS)
+            if (map->data[i][j].value == GRASS)
             {
                 if (rand() % 100 < 3)
                 {
-                    map->data[i][j] = SAND;
-                    if (map->data[i + 1][j] != VOID)
+                    map->data[i][j].value = SAND;
+                    map->data[i][j].isWalkable = 1;
+                    map->data[i][j].isVisited = 0;
+                    if (map->data[i + 1][j].value != VOID)
                     {
-                        map->data[i + 1][j] = SAND;
+                        map->data[i + 1][j].value = SAND;
+                        map->data[i][j].isWalkable = 1;
+                        map->data[i][j].isVisited = 0;
                         tab[2]++;
                         tab[0]--;
                     }
-                    if (map->data[i - 1][j] != VOID)
+                    if (map->data[i - 1][j].value != VOID)
                     {
-                        map->data[i - 1][j] = SAND;
+                        map->data[i - 1][j].value = SAND;
+                        map->data[i][j].isWalkable = 1;
+                        map->data[i][j].isVisited = 0;
                         tab[2]++;
                         tab[0]--;
                     }
-                    if (map->data[i][j + 1] != VOID)
+                    if (map->data[i][j + 1].value != VOID)
                     {
-                        map->data[i][j + 1] = SAND;
+                        map->data[i][j + 1].value = SAND;
+                        map->data[i][j].isWalkable = 1;
+                        map->data[i][j].isVisited = 0;
                         tab[2]++;
                         tab[0]--;
                     }
-                    if (map->data[i][j - 1] != VOID)
+                    if (map->data[i][j - 1].value != VOID)
                     {
-                        map->data[i][j - 1] = SAND;
+                        map->data[i][j - 1].value = SAND;
+                        map->data[i][j].isWalkable = 1;
+                        map->data[i][j].isVisited = 0;
                         tab[2]++;
                         tab[0]--;
                     }
                     while (rand() % 100 < 50)
                     {
-                        if (map->data[i + 1][j + 1] != VOID)
+                        if (map->data[i + 1][j + 1].value != VOID)
                         {
-                            map->data[i + 1][j + 1] = SAND;
+                            map->data[i + 1][j + 1].value = SAND;
+                            map->data[i][j].isWalkable = 1;
+                            map->data[i][j].isVisited = 0;
                             tab[2]++;
                             tab[0]--;
                         }
@@ -251,40 +281,52 @@ void generateMap(Map *map, int width, int height)
     {
         for (int j = 1; j < map->width - 1; j++)
         {
-            if (map->data[i][j] == GRASS)
+            if (map->data[i][j].value == GRASS)
             {
                 if (rand() % 100 < 1)
                 {
-                    map->data[i][j] = LAVA;
-                    if (map->data[i + 1][j] != VOID && map->data[i + 1][j] != WATER)
+                    map->data[i][j].value = LAVA;
+                    map->data[i][j].isWalkable = 1;
+                    map->data[i][j].isVisited = 0;
+                    if (map->data[i + 1][j].value != VOID && map->data[i + 1][j].value != WATER)
                     {
-                        map->data[i + 1][j] = LAVA;
+                        map->data[i + 1][j].value = LAVA;
+                        map->data[i][j].isWalkable = 1;
+                        map->data[i][j].isVisited = 0;
                         tab[3]++;
                         tab[0]--;
                     }
-                    if (map->data[i - 1][j] != VOID && map->data[i - 1][j] != WATER)
+                    if (map->data[i - 1][j].value != VOID && map->data[i - 1][j].value != WATER)
                     {
-                        map->data[i - 1][j] = LAVA;
+                        map->data[i - 1][j].value = LAVA;
+                        map->data[i][j].isWalkable = 1;
+                        map->data[i][j].isVisited = 0;
                         tab[3]++;
                         tab[0]--;
                     }
-                    if (map->data[i][j + 1] != VOID && map->data[i][j + 1] != WATER)
+                    if (map->data[i][j + 1].value != VOID && map->data[i][j + 1].value != WATER)
                     {
-                        map->data[i][j + 1] = LAVA;
+                        map->data[i][j + 1].value = LAVA;
+                        map->data[i][j].isWalkable = 1;
+                        map->data[i][j].isVisited = 0;
                         tab[3]++;
                         tab[0]--;
                     }
-                    if (map->data[i][j - 1] != VOID && map->data[i][j - 1] != WATER)
+                    if (map->data[i][j - 1].value != VOID && map->data[i][j - 1].value != WATER)
                     {
-                        map->data[i][j - 1] = LAVA;
+                        map->data[i][j - 1].value = LAVA;
+                        map->data[i][j].isWalkable = 1;
+                        map->data[i][j].isVisited = 0;
                         tab[3]++;
                         tab[0]--;
                     }
                     if (rand() % 100 < 50)
                     {
-                        if (map->data[i + 1][j + 1] != VOID && map->data[i + 1][j + 1] != WATER)
+                        if (map->data[i + 1][j + 1].value != VOID && map->data[i + 1][j + 1].value != WATER)
                         {
-                            map->data[i + 1][j + 1] = LAVA;
+                            map->data[i + 1][j + 1].value = LAVA;
+                            map->data[i][j].isWalkable = 1;
+                            map->data[i][j].isVisited = 0;
                             tab[3]++;
                             tab[0]--;
                         }
@@ -300,7 +342,7 @@ void generateMap(Map *map, int width, int height)
     {
         for (int j = 1; j < map->width - 1; j++)
         {
-            if (map->data[i][j] == GRASS)
+            if (map->data[i][j].value == GRASS)
             {
                 if (rand() % 100 < 3)
 
@@ -310,40 +352,48 @@ void generateMap(Map *map, int width, int height)
                     {
                         for (int j = 1; j < map->width - 1; j++)
                         {
-                            if (map->data[i][j] == GRASS)
+                            if (map->data[i][j].value == GRASS)
                             {
-                                if (map->data[i + 1][j] == SAND || map->data[i + 1][j] == WATER)
+                                if (map->data[i + 1][j].value == SAND || map->data[i + 1][j].value == WATER)
                                 {
                                     if (rand() % 100 < 50)
                                     {
-                                        map->data[i][j] = DIRT;
+                                        map->data[i][j].value = DIRT;
+                                        map->data[i][j].isWalkable = 1;
+                                        map->data[i][j].isVisited = 0;
                                         tab[4]++;
                                         tab[0]--;
                                     }
                                 }
-                                if (map->data[i - 1][j] == SAND || map->data[i - 1][j] == WATER)
+                                if (map->data[i - 1][j].value == SAND || map->data[i - 1][j].value == WATER)
                                 {
                                     if (rand() % 100 < 50)
                                     {
-                                        map->data[i][j] = DIRT;
+                                        map->data[i][j].value = DIRT;
+                                        map->data[i][j].isWalkable = 1;
+                                        map->data[i][j].isVisited = 0;
                                         tab[4]++;
                                         tab[0]--;
                                     }
                                 }
-                                if (map->data[i][j + 1] == SAND || map->data[i][j + 1] == WATER)
+                                if (map->data[i][j + 1].value == SAND || map->data[i][j + 1].value == WATER)
                                 {
                                     if (rand() % 100 < 50)
                                     {
-                                        map->data[i][j] = DIRT;
+                                        map->data[i][j].value = DIRT;
+                                        map->data[i][j].isWalkable = 1;
+                                        map->data[i][j].isVisited = 0;
                                         tab[4]++;
                                         tab[0]--;
                                     }
                                 }
-                                if (map->data[i][j - 1] == SAND || map->data[i][j - 1] == WATER)
+                                if (map->data[i][j - 1].value == SAND || map->data[i][j - 1].value == WATER)
                                 {
                                     if (rand() % 100 < 50)
                                     {
-                                        map->data[i][j] = DIRT;
+                                        map->data[i][j].value = DIRT;
+                                        map->data[i][j].isWalkable = 1;
+                                        map->data[i][j].isVisited = 0;
                                         tab[4]++;
                                         tab[0]--;
                                     }
@@ -361,40 +411,48 @@ void generateMap(Map *map, int width, int height)
     {
         for (int j = 1; j < map->width - 1; j++)
         {
-            if (map->data[i][j] == GRASS)
+            if (map->data[i][j].value == GRASS)
             {
-                if (map->data[i + 1][j] == DIRT || map->data[i + 1][j] == LAVA)
+                if (map->data[i + 1][j].value == DIRT || map->data[i + 1][j].value == LAVA)
                 {
                     if (rand() % 100 < 50)
                     {
-                        map->data[i][j] = STONE;
+                        map->data[i][j].value = STONE;
+                        map->data[i][j].isWalkable = 1;
+                        map->data[i][j].isVisited = 0;
                         tab[5]++;
                         tab[0]--;
                     }
                 }
-                if (map->data[i - 1][j] == DIRT || map->data[i - 1][j] == LAVA)
+                if (map->data[i - 1][j].value == DIRT || map->data[i - 1][j].value == LAVA)
                 {
                     if (rand() % 100 < 50)
                     {
-                        map->data[i][j] = STONE;
+                        map->data[i][j].value = STONE;
+                        map->data[i][j].isWalkable = 1;
+                        map->data[i][j].isVisited = 0;
                         tab[5]++;
                         tab[0]--;
                     }
                 }
-                if (map->data[i][j + 1] == DIRT || map->data[i][j + 1] == LAVA)
+                if (map->data[i][j + 1].value == DIRT || map->data[i][j + 1].value == LAVA)
                 {
                     if (rand() % 100 < 50)
                     {
-                        map->data[i][j] = STONE;
+                        map->data[i][j].value = STONE;
+                        map->data[i][j].isWalkable = 1;
+                        map->data[i][j].isVisited = 0;
                         tab[5]++;
                         tab[0]--;
                     }
                 }
-                if (map->data[i][j - 1] == DIRT || map->data[i][j - 1] == LAVA)
+                if (map->data[i][j - 1].value == DIRT || map->data[i][j - 1].value == LAVA)
                 {
                     if (rand() % 100 < 50)
                     {
-                        map->data[i][j] = STONE;
+                        map->data[i][j].value = STONE;
+                        map->data[i][j].isWalkable = 1;
+                        map->data[i][j].isVisited = 0;
                         tab[5]++;
                         tab[0]--;
                     }
@@ -409,12 +467,14 @@ void generateMap(Map *map, int width, int height)
     {
         for (int j = 1; j < map->width - 1; j++)
         {
-            if (map->data[i][j] == GRASS || map->data[i][j] == DIRT || map->data[i][j] == STONE || map->data[i][j] == SAND)
+            if (map->data[i][j].value == GRASS || map->data[i][j].value == DIRT || map->data[i][j].value == STONE || map->data[i][j].value == SAND)
             {
                 if (rand() % 100 < 2)
                 {
-                    tab[map->data[i][j]]--;
-                    map->data[i][j] = CHEST;
+                    tab[map->data[i][j].value]--;
+                    map->data[i][j].value = CHEST;
+                    map->data[i][j].isWalkable = 1;
+                    map->data[i][j].isVisited = 0;
                 }
             }
         }
@@ -425,12 +485,14 @@ void generateMap(Map *map, int width, int height)
     {
         for (int j = 1; j < map->width - 1; j++)
         {
-            if (map->data[i][j] == GRASS || map->data[i][j] == DIRT || map->data[i][j] == STONE || map->data[i][j] == SAND)
+            if (map->data[i][j].value == GRASS || map->data[i][j].value == DIRT || map->data[i][j].value == STONE || map->data[i][j].value == SAND)
             {
                 if (rand() % 100 < 2)
                 {
-                    tab[map->data[i][j]]--;
-                    map->data[i][j] = WALL;
+                    tab[map->data[i][j].value]--;
+                    map->data[i][j].value = WALL;
+                    map->data[i][j].isWalkable = 0;
+                    map->data[i][j].isVisited = 0;
                 }
             }
         }
@@ -442,16 +504,29 @@ void generateMap(Map *map, int width, int height)
     {
         for (int j = 1; j < map->width - 1; j++)
         {
-            if (map->data[i][j] == WATER)
+            if (map->data[i][j].value == WATER)
             {
                 if (rand() % 100 < 2)
                 {
-                    tab[map->data[i][j]]--;
-                    map->data[i][j] = NENUPHAR;
+                    tab[map->data[i][j].value]--;
+                    map->data[i][j].value = NENUPHAR;
+                    map->data[i][j].isWalkable = 1;
+                    map->data[i][j].isVisited = 0;
                 }
-            }
-        }
+
+}
+
+int isPlayerAlive(Player *player, Map *map){
+    /* First we check the attribute of the player and his life */
+    if(player->isDead == 1 || player->pv == 0){
+        return 0;
     }
+    /* Then we check if the player is on a lava block */
+    printf("%d", map->data[player->coordY][player->coordX]);
+    if(map->data[player->coordY][player->coordX] == LAVA){
+        return 0;
+    }
+    return 1;
 }
 
 void generatePlayerCoordinates(Player *player, Map *map)

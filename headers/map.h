@@ -17,15 +17,22 @@
 #define VOID 9
 #define PLAYER 10
 
+typedef struct Block
+{
+    int isWalkable;
+    int isVisited;
+    int value;
+} Block;
+
 typedef struct Map
 {
     int width;
     int height;
-    int **data;
+    Block **data;
 } Map;
 
 void displayMap(Map *map);
-void displayMapWithPlayer(Map *map, Player *player);
+void displayMapWithPlayer(Map *map /*, Player *player*/);
 void displayMapWithoutBars(Map *map);
 void generateMap(Map *map, int width, int height);
 void freeMap(Map *map);
