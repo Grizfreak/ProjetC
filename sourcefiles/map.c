@@ -56,7 +56,7 @@ void displayMap(Map *map)
 
 void displayMapWithoutBars(Map *map)
 {
-    //system("clear");
+    // system("clear");
     int endofline = 0;
     for (int i = 0; i < map->height; i++)
     {
@@ -186,16 +186,16 @@ void generateMap(Map *map, int width, int height)
                     if (map->data[i][j + 1].value != VOID)
                     {
                         map->data[i][j + 1].value = WATER;
-                        map->data[i][j].isWalkable = 0;
-                        map->data[i][j].isVisited = 0;
+                        map->data[i][j + 1].isWalkable = 0;
+                        map->data[i][j + 1].isVisited = 0;
                         tab[1]++;
                         tab[0]--;
                     }
                     if (map->data[i][j - 1].value != VOID)
                     {
                         map->data[i][j - 1].value = WATER;
-                        map->data[i][j].isWalkable = 0;
-                        map->data[i][j].isVisited = 0;
+                        map->data[i][j - 1].isWalkable = 0;
+                        map->data[i][j - 1].isVisited = 0;
                         tab[1]++;
                         tab[0]--;
                     }
@@ -204,8 +204,8 @@ void generateMap(Map *map, int width, int height)
                         if (map->data[i + 1][j + 1].value != VOID)
                         {
                             map->data[i + 1][j + 1].value = WATER;
-                            map->data[i][j].isWalkable = 0;
-                            map->data[i][j].isVisited = 0;
+                            map->data[i + 1][j + 1].isWalkable = 0;
+                            map->data[i + 1][j + 1].isVisited = 0;
                             tab[1]++;
                             tab[0]--;
                         }
@@ -230,32 +230,32 @@ void generateMap(Map *map, int width, int height)
                     if (map->data[i + 1][j].value != VOID)
                     {
                         map->data[i + 1][j].value = SAND;
-                        map->data[i][j].isWalkable = 1;
-                        map->data[i][j].isVisited = 0;
+                        map->data[i + 1][j].isWalkable = 1;
+                        map->data[i + 1][j].isVisited = 0;
                         tab[2]++;
                         tab[0]--;
                     }
                     if (map->data[i - 1][j].value != VOID)
                     {
                         map->data[i - 1][j].value = SAND;
-                        map->data[i][j].isWalkable = 1;
-                        map->data[i][j].isVisited = 0;
+                        map->data[i - 1][j].isWalkable = 1;
+                        map->data[i - 1][j].isVisited = 0;
                         tab[2]++;
                         tab[0]--;
                     }
                     if (map->data[i][j + 1].value != VOID)
                     {
                         map->data[i][j + 1].value = SAND;
-                        map->data[i][j].isWalkable = 1;
-                        map->data[i][j].isVisited = 0;
+                        map->data[i][j + 1].isWalkable = 1;
+                        map->data[i][j + 1].isVisited = 0;
                         tab[2]++;
                         tab[0]--;
                     }
                     if (map->data[i][j - 1].value != VOID)
                     {
                         map->data[i][j - 1].value = SAND;
-                        map->data[i][j].isWalkable = 1;
-                        map->data[i][j].isVisited = 0;
+                        map->data[i][j - 1].isWalkable = 1;
+                        map->data[i][j - 1].isVisited = 0;
                         tab[2]++;
                         tab[0]--;
                     }
@@ -264,8 +264,8 @@ void generateMap(Map *map, int width, int height)
                         if (map->data[i + 1][j + 1].value != VOID)
                         {
                             map->data[i + 1][j + 1].value = SAND;
-                            map->data[i][j].isWalkable = 1;
-                            map->data[i][j].isVisited = 0;
+                            map->data[i + 1][j + 1].isWalkable = 1;
+                            map->data[i + 1][j + 1].isVisited = 0;
                             tab[2]++;
                             tab[0]--;
                         }
@@ -291,32 +291,32 @@ void generateMap(Map *map, int width, int height)
                     if (map->data[i + 1][j].value != VOID && map->data[i + 1][j].value != WATER)
                     {
                         map->data[i + 1][j].value = LAVA;
-                        map->data[i][j].isWalkable = 1;
-                        map->data[i][j].isVisited = 0;
+                        map->data[i + 1][j].isWalkable = 1;
+                        map->data[i + 1][j].isVisited = 0;
                         tab[3]++;
                         tab[0]--;
                     }
                     if (map->data[i - 1][j].value != VOID && map->data[i - 1][j].value != WATER)
                     {
                         map->data[i - 1][j].value = LAVA;
-                        map->data[i][j].isWalkable = 1;
-                        map->data[i][j].isVisited = 0;
+                        map->data[i - 1][j].isWalkable = 1;
+                        map->data[i - 1][j].isVisited = 0;
                         tab[3]++;
                         tab[0]--;
                     }
                     if (map->data[i][j + 1].value != VOID && map->data[i][j + 1].value != WATER)
                     {
                         map->data[i][j + 1].value = LAVA;
-                        map->data[i][j].isWalkable = 1;
-                        map->data[i][j].isVisited = 0;
+                        map->data[i][j + 1].isWalkable = 1;
+                        map->data[i][j + 1].isVisited = 0;
                         tab[3]++;
                         tab[0]--;
                     }
                     if (map->data[i][j - 1].value != VOID && map->data[i][j - 1].value != WATER)
                     {
                         map->data[i][j - 1].value = LAVA;
-                        map->data[i][j].isWalkable = 1;
-                        map->data[i][j].isVisited = 0;
+                        map->data[i][j - 1].isWalkable = 1;
+                        map->data[i][j - 1].isVisited = 0;
                         tab[3]++;
                         tab[0]--;
                     }
@@ -325,8 +325,8 @@ void generateMap(Map *map, int width, int height)
                         if (map->data[i + 1][j + 1].value != VOID && map->data[i + 1][j + 1].value != WATER)
                         {
                             map->data[i + 1][j + 1].value = LAVA;
-                            map->data[i][j].isWalkable = 1;
-                            map->data[i][j].isVisited = 0;
+                            map->data[i + 1][j + 1].isWalkable = 1;
+                            map->data[i + 1][j + 1].isVisited = 0;
                             tab[3]++;
                             tab[0]--;
                         }
@@ -584,14 +584,17 @@ void move(Player *player, int direction, Map *map)
 
 }
 
-int isPlayerAlive(Player *player, Map *map){
+int isPlayerAlive(Player *player, Map *map)
+{
     /* First we check the attribute of the player and his life */
-    if(player->isDead == 1 || player->pv == 0){
+    if (player->isDead == 1 || player->pv == 0)
+    {
         printf("Player is dead because he lost all his pv !\n");
         return 0;
     }
     /* Then we check if the player is on a lava block */
-    if(map->data[player->coordX][player->coordY].value == LAVA){
+    if (map->data[player->coordX][player->coordY].value == LAVA)
+    {
         printf("Player is dead because he fall into lava !\n");
         return 0;
     }
