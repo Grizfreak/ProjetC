@@ -4,8 +4,13 @@
 int main(int argc, char *argv[])
 {
     Map *map = (Map *)malloc(sizeof(Map));
+    Player *player = (Player *)malloc(sizeof(Player));
+
+    initPlayer(player);
+
     generateMap(map, 20, 20);
-    displayMapWithoutBars(map);
+    generatePlayerCoordinates(player, map);
+    displayMapWithPlayer(map, player);
 
     int result = displayMenu();
     if (result == 1)
