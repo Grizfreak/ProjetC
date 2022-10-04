@@ -1,8 +1,9 @@
+#pragma once
 #include <stdio.h>
 #include <stdlib.h>
 
 typedef struct Mob {
-    char[32] name;
+    char name[32];
     int pv;
     int attack;
 } Mob;

@@ -6,7 +6,7 @@ int displayMenu()
     int rtn;
     while (1)
     {
-        printf("1. Play ⚔️\n");
+        printf("1. Start new game ⚔️\n");
         printf("2. Continue 🚶‍♂️\n");
         printf("3. Quit ❌\n");
         printf("Your choice: ");
@@ -35,6 +35,39 @@ int newGame()
 {
     printf("Starting new game...\n");
     return 0;
+}
+
+char displayMovementMenu(){
+    char choice;
+    char rtn;
+    while (1)
+    {
+        printf("Go North by pressing 'z' \n");
+        printf("Go South by pressing 's' \n");
+        printf("Go East by pressing 'd' \n");
+        printf("Go West by pressing 'q' \n");
+        printf("Your choice: ");
+        clearBuffer();
+        rtn = scanf("%c", &choice);
+        if (rtn != 'z' && rtn != 's' && rtn != 'd' && rtn != 'q')
+        {
+            if (choice == 'z' || choice == 's' || choice == 'd' || choice == 'q')
+            {
+                return choice;
+            }
+            else
+            {
+                printf("Invalid choice, please try again.\n");
+            }
+        }
+        else
+        {
+            printf("Invalid choice, please try again.\n");
+            clearBuffer();
+        }
+    }
+    return choice;
+
 }
 
 void clearBuffer()

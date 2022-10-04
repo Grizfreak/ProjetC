@@ -35,11 +35,6 @@ void heal(Player *player, Item *item){
 
 }
 
-/* Method wich enable the player to move in the direction passed as parameter */
-void move(Player *player, int *direction){
-
-}
-
 /* Method which enable the player to destoy the object next to the player */
 void destroy(Player player){
 
@@ -47,5 +42,5 @@ void destroy(Player player){
 
 /* Method which enable the player to take the item next to him */
 void take(Player player){
-
+    
 }

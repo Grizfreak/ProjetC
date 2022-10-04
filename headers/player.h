@@ -1,3 +1,4 @@
+#pragma once
 #include <stdio.h>
 #include <stdlib.h>
 #include "mob.h"
@@ -14,7 +15,7 @@
 
 /* Player structure */
 typedef struct Player {
-    char[32] name;
+    char name[32];
     int coordX;
     int coordY;
     int pv;
@@ -36,9 +37,6 @@ void defend(Player *player, Mob *mob);
 
 /* Method which enable the player to heal himself */
 void heal(Player *player, Item *item);
-
-/* Method wich enable the player to move in the direction passed as parameter */
-void move(Player *player, int *direction);
 
 /* Method which enable the player to destoy the object next to the player */
 void destroy(Player player);

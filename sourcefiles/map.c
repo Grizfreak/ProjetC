@@ -56,7 +56,7 @@ void displayMap(Map *map)
 
 void displayMapWithoutBars(Map *map)
 {
-    system("clear");
+    //system("clear");
     int endofline = 0;
     for (int i = 0; i < map->height; i++)
     {
@@ -94,6 +94,9 @@ void displayMapWithoutBars(Map *map)
             case LAVA:
                 printf("\033[91m≈ \033[0m");
                 break;
+            case PLAYER:
+                printf(" P");
+                break;
             default:
                 printf("%d ", map->data[i][j]);
                 break;
@@ -110,27 +113,10 @@ void displayMapWithoutBars(Map *map)
 
 void displayMapWithPlayer(Map *map, Player *player)
 {
-    int endofline = 0;
-    for (int i = 0; i < map->height; i++)
-    {
-        for (int j = 0; j < map->width; j++)
-        {
-            if (i == player->y && j == player->x)
-            {
-                printf("| P |");
-            }
-            else
-            {
-                printf("| %d |", map->data[i][j]);
-            }
-            endofline++;
-            if (endofline == map->width)
-            {
-                printf("\n");
-                endofline = 0;
-            }
-        }
-    }
+    int blockToRewind = map->data[player->coordX][player->coordY];
+    map->data[player->coordX][player->coordY] = PLAYER;
+    displayMapWithoutBars(map);
+    map->data[player->coordX][player->coordY] = blockToRewind;
 }
 
 void generateMap(Map *map, int width, int height)
@@ -466,6 +452,76 @@ void generateMap(Map *map, int width, int height)
             }
         }
     }
+}
+
+void generatePlayerCoordinates(Player *player, Map *map)
+{
+
+    int coordX = rand() % map->width - 1;
+    int coordY = rand() % map->height - 1;
+
+    while (map->data[coordX][coordY] == WATER ||
+           map->data[coordX][coordY] == LAVA ||
+           map->data[coordX][coordY] == NENUPHAR)
+    {
+        coordX = 1 + (rand() % (map->height - 1));
+        coordY = 1 + (rand() % (map->width - 1));
+    }
+
+    player->coordX = coordX;
+    player->coordY = coordY;
+
+    printf("CoordX : %d, CoordY : %d\n", coordX, coordY);
+}
+
+void move(Player *player, int direction, Map *map)
+{
+
+    switch(direction){
+        case NORD:
+            if(map->data[player->coordX - 1][player->coordY] != WATER &&
+                map->data[player->coordX - 1][player->coordY] != WALL &&
+                map->data[player->coordX - 1][player->coordY] != LAVA && 
+                map->data[player->coordX - 1][player->coordY] != VOID){
+                player->coordX -= 1;
+            } else {
+                printf("You can't move North \n");
+            }
+            break;
+        case SUD:
+            if(map->data[player->coordX + 1][player->coordY] != WATER &&
+                map->data[player->coordX + 1][player->coordY] != WALL &&
+                map->data[player->coordX + 1][player->coordY] != LAVA && 
+                map->data[player->coordX + 1][player->coordY] != VOID){
+                player->coordX += 1;
+            } else {
+                printf("You can't move South \n");
+            }
+            break;
+        case EST:
+            if(map->data[player->coordX][player->coordY + 1] != WATER &&
+                map->data[player->coordX][player->coordY + 1] != WALL &&
+                map->data[player->coordX][player->coordY + 1] != LAVA && 
+                map->data[player->coordX][player->coordY + 1] != VOID){
+                player->coordY += 1;
+            } else {
+                printf("You can't move East \n");
+            }
+            break;
+        case OUEST:
+            if(map->data[player->coordX][player->coordY - 1] != WATER &&
+                map->data[player->coordX][player->coordY - 1] != WALL &&
+                map->data[player->coordX][player->coordY - 1] != LAVA && 
+                map->data[player->coordX][player->coordY - 1] != VOID){
+                player->coordY -= 1;
+            } else {
+                printf("You can't move West \n");
+            }
+            break;
+        default:
+            printf("Uknown direction");
+    }
+
 }
 
 void freeMap(Map *map)
