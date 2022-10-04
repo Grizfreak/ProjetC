@@ -37,7 +37,8 @@ int newGame()
     return 0;
 }
 
-char displayMovementMenu(){
+char displayMovementMenu()
+{
     char choice;
     char rtn;
     while (1)
@@ -67,10 +68,10 @@ char displayMovementMenu(){
         }
     }
     return choice;
-
 }
 
-int displayFightMenu(){
+int displayFightMenu()
+{
     return 0;
 }
 
@@ -87,7 +88,7 @@ void saveFile(Map *map)
     FILE *file;
     int fileNumber = 0;
     printf("Please choose your save file emplacement: \n");
-    if ((file = fopen("../savedata/save1.dat", "rb")) == NULL)
+    if ((file = fopen("savedata/save1.dat", "rb")) == NULL)
     {
         printf("FILE 1 - NO DATA\n");
     }
@@ -97,7 +98,7 @@ void saveFile(Map *map)
         fclose(file);
     }
 
-    if ((file = fopen("../savedata/save2.dat", "rb")) == NULL)
+    if ((file = fopen("savedata/save2.dat", "rb")) == NULL)
     {
         printf("FILE 2 - NO DATA\n");
     }
@@ -107,7 +108,7 @@ void saveFile(Map *map)
         fclose(file);
     }
 
-    if ((file = fopen("../savedata/save3.dat", "rb")) == NULL)
+    if ((file = fopen("savedata/save3.dat", "rb")) == NULL)
     {
         printf("FILE 3 - NO DATA\n");
     }
@@ -118,8 +119,6 @@ void saveFile(Map *map)
     }
 
     // Get user choice
-    char str[2];
-    char *fileName;
     while (fileNumber != 1 && fileNumber != 2 && fileNumber != 3)
     {
         printf("Your choice: ");
@@ -132,20 +131,34 @@ void saveFile(Map *map)
         else
         {
             clearBuffer();
-            sprintf(str, "%d", fileNumber);
-            fileName = malloc(strlen("../savedata/save.dat") + strlen(str) + 1);
-            strcat(fileName, "../savedata/save");
-            strcat(fileName, str);
-            strcat(fileName, ".dat");
-            printf("Saving game to %s...\n", fileName);
         }
     }
 
-    if ((file = fopen("test", "wb")) == NULL)
+    switch (fileNumber)
     {
-        printf("Error while opening file.\n");
-        return;
+    case 1:
+        if ((file = fopen("savedata/save1.dat", "wb")) == NULL)
+        {
+            printf("Error while opening file.\n");
+            return;
+        }
+        break;
+    case 2:
+        if ((file = fopen("savedata/save2.dat", "wb")) == NULL)
+        {
+            printf("Error while opening file.\n");
+            return;
+        }
+        break;
+    case 3:
+        if ((file = fopen("savedata/save3.dat", "wb")) == NULL)
+        {
+            printf("Error while opening file.\n");
+            return;
+        }
+        break;
     }
+
     if (fwrite(&map->height, sizeof(int), 1, file) != 1)
     {
         printf("Error while writing height in file.\n");
@@ -177,7 +190,6 @@ void saveFile(Map *map)
             }
         }
     }
-    free(fileName);
     printf("File saved.\n");
     fclose(file);
 }
@@ -185,10 +197,72 @@ void saveFile(Map *map)
 void loadFile(Map *map)
 {
     FILE *file;
-    if ((file = fopen("test", "rb")) == NULL)
+    int fileNumber = 0;
+    printf("Please choose your save file emplacement: \n");
+    if ((file = fopen("savedata/save1.dat", "rb")) == NULL)
     {
-        printf("Error while opening file.\n");
-        return;
+        printf("FILE 1 - NO DATA\n");
+    }
+    else
+    {
+        printf("1. FILE 1 - PREVIOUS DATA\n");
+        fclose(file);
+    }
+    if ((file = fopen("savedata/save2.dat", "rb")) == NULL)
+    {
+        printf("FILE 2 - NO DATA\n");
+    }
+    else
+    {
+        printf("1. FILE 2 - PREVIOUS DATA\n");
+        fclose(file);
+    }
+    if ((file = fopen("savedata/save3.dat", "rb")) == NULL)
+    {
+        printf("FILE 3 - NO DATA\n");
+    }
+    else
+    {
+        printf("1. FILE 3 - PREVIOUS DATA\n");
+        fclose(file);
+    }
+    while (fileNumber != 1 && fileNumber != 2 && fileNumber != 3)
+    {
+        printf("Your choice: ");
+        scanf("%d", &fileNumber);
+        if (fileNumber != 1 && fileNumber != 2 && fileNumber != 3)
+        {
+            printf("Invalid choice, please try again.\n");
+            clearBuffer();
+        }
+        else
+        {
+            clearBuffer();
+        }
+    }
+    switch (fileNumber)
+    {
+    case 1:
+        if ((file = fopen("savedata/save1.dat", "rb")) == NULL)
+        {
+            printf("Error while opening file.\n");
+            return;
+        }
+        break;
+    case 2:
+        if ((file = fopen("savedata/save2.dat", "rb")) == NULL)
+        {
+            printf("Error while opening file.\n");
+            return;
+        }
+        break;
+    case 3:
+        if ((file = fopen("savedata/save3.dat", "rb")) == NULL)
+        {
+            printf("Error while opening file.\n");
+            return;
+        }
+        break;
     }
 
     if (fread(&map->height, sizeof(int), 1, file) != 1)
@@ -196,6 +270,7 @@ void loadFile(Map *map)
         printf("Error while reading height from file.\n");
         return;
     }
+
     printf("Height: %d\n", map->height);
     if (fread(&map->width, sizeof(int), 1, file) != 1)
     {

@@ -27,9 +27,8 @@ int main(int argc, char *argv[])
     {
         saveFile(map);
         freeMap(map);
-        free(map);
-        return 0;
     }
     free(map);
+    free(player);
     return 0;
 }
