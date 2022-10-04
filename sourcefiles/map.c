@@ -481,7 +481,7 @@ void generateMap(Map *map, int width, int height)
     }
 
     // inflate wall in map
-    for (int i = 1; i < map->height - 1; i++)
+    /*for (int i = 1; i < map->height - 1; i++)
     {
         for (int j = 1; j < map->width - 1; j++)
         {
@@ -496,7 +496,7 @@ void generateMap(Map *map, int width, int height)
                 }
             }
         }
-    }
+    }*/
 
     // inflate nenuphar in map
     // only on water randomly
