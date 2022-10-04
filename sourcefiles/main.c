@@ -16,40 +16,19 @@ int main(int argc, char *argv[])
     if (result == 1)
     {
         result = newGame();
-        while (isPlayerAlive(player, map))
-        {
-            switch (displayMovementMenu())
-            {
-            case 'z':
-                move(player, NORD, map);
-                break;
-            case 's':
-                move(player, SUD, map);
-                break;
-            case 'd':
-                move(player, EST, map);
-                break;
-            case 'q':
-                move(player, OUEST, map);
-                break;
-            default:
-                break;
-            };
-            displayMapWithPlayer(map, player);
-        }
+        freeMap(map);
     }
     else if (result == 2)
     {
         loadFile(map);
+        freeMap(map);
     }
     else if (result == 3)
     {
         saveFile(map);
         freeMap(map);
-        return 0;
     }
-
-    freeMap(map);
+    free(map);
     free(player);
     return 0;
 }
