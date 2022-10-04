@@ -24,6 +24,7 @@ typedef struct Player {
     int XpUntilLeveling;
     int state;
     int isDead;
+    Item inventory[10];
 } Player;
 
 /* Method which init the player with default state and default param */
