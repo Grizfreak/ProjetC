@@ -11,18 +11,20 @@ int main(int argc, char *argv[])
     if (result == 1)
     {
         result = newGame();
+        freeMap(map);
     }
     else if (result == 2)
     {
         loadFile(map);
+        freeMap(map);
     }
     else if (result == 3)
     {
         saveFile(map);
         freeMap(map);
+        free(map);
         return 0;
     }
-
-    freeMap(map);
+    free(map);
     return 0;
 }
