@@ -12,6 +12,7 @@
 #define DEFAULT 11
 #define IN_FIGHT 12
 #define IS_MOVING_SMTH 13
+#define CAN_MOVE_ON_WATER 14
 
 /* Player structure */
 typedef struct Player {
@@ -37,10 +38,13 @@ void attack(Player *player, Mob *mob);
 void defend(Player *player, Mob *mob);
 
 /* Method which enable the player to heal himself */
-void heal(Player *player, Item *item);
+void use(Player *player, Item *item);
 
 /* Method which enable the player to destoy the object next to the player */
 void destroy(Player player);
 
 /* Method which enable the player to take the item next to him */
 void take(Player player);
+
+/* Method which add an item to the players inventory */
+void addItemToInventory(Item *item, Player *player);

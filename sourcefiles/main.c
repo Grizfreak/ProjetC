@@ -1,10 +1,14 @@
 #include "../headers/map.h"
+#include "../headers/item.h"
 #include "../headers/utils.h"
+
+Item *items;
 
 int main(int argc, char *argv[])
 {
     Map *map = (Map *)malloc(sizeof(Map));
     Player *player = (Player *)malloc(sizeof(Player));
+    items = initItems();
 
     initPlayer(player);
 
