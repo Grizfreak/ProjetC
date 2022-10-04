@@ -480,8 +480,7 @@ void move(Player *player, int direction, Map *map)
     switch(direction){
         case NORD:
             if(map->data[player->coordX - 1][player->coordY] != WATER &&
-                map->data[player->coordX - 1][player->coordY] != WALL &&
-                map->data[player->coordX - 1][player->coordY] != LAVA && 
+                map->data[player->coordX - 1][player->coordY] != WALL && 
                 map->data[player->coordX - 1][player->coordY] != VOID){
                 player->coordX -= 1;
             } else {
@@ -490,8 +489,7 @@ void move(Player *player, int direction, Map *map)
             break;
         case SUD:
             if(map->data[player->coordX + 1][player->coordY] != WATER &&
-                map->data[player->coordX + 1][player->coordY] != WALL &&
-                map->data[player->coordX + 1][player->coordY] != LAVA && 
+                map->data[player->coordX + 1][player->coordY] != WALL && 
                 map->data[player->coordX + 1][player->coordY] != VOID){
                 player->coordX += 1;
             } else {
@@ -500,8 +498,7 @@ void move(Player *player, int direction, Map *map)
             break;
         case EST:
             if(map->data[player->coordX][player->coordY + 1] != WATER &&
-                map->data[player->coordX][player->coordY + 1] != WALL &&
-                map->data[player->coordX][player->coordY + 1] != LAVA && 
+                map->data[player->coordX][player->coordY + 1] != WALL && 
                 map->data[player->coordX][player->coordY + 1] != VOID){
                 player->coordY += 1;
             } else {
@@ -511,7 +508,6 @@ void move(Player *player, int direction, Map *map)
         case OUEST:
             if(map->data[player->coordX][player->coordY - 1] != WATER &&
                 map->data[player->coordX][player->coordY - 1] != WALL &&
-                map->data[player->coordX][player->coordY - 1] != LAVA && 
                 map->data[player->coordX][player->coordY - 1] != VOID){
                 player->coordY -= 1;
             } else {
@@ -522,6 +518,19 @@ void move(Player *player, int direction, Map *map)
             printf("Uknown direction");
     }
 
+}
+
+int isPlayerAlive(Player *player, Map *map){
+    /* First we check the attribute of the player and his life */
+    if(player->isDead == 1 || player->pv == 0){
+        return 0;
+    }
+    /* Then we check if the player is on a lava block */
+    printf("%d", map->data[player->coordY][player->coordX]);
+    if(map->data[player->coordY][player->coordX] == LAVA){
+        return 0;
+    }
+    return 1;
 }
 
 void freeMap(Map *map)

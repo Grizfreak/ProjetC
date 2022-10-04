@@ -33,3 +33,4 @@ void freeMap(Map *map);
 /* Method wich enable the player to move in the direction passed as parameter */
 void move(Player *player, int direction, Map *map);
 void generatePlayerCoordinates(Player *player, Map *map);
+int isPlayerAlive(Player *player, Map *map);

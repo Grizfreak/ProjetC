@@ -70,6 +70,10 @@ char displayMovementMenu(){
 
 }
 
+int displayFightMenu(){
+    return 0;
+}
+
 void clearBuffer()
 {
     int c = getchar();

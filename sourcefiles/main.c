@@ -6,6 +6,8 @@ int main(int argc, char *argv[])
     Map *map = (Map *)malloc(sizeof(Map));
     Player *player = (Player *)malloc(sizeof(Player));
 
+    initPlayer(player);
+
     generateMap(map, 20, 20);
     generatePlayerCoordinates(player, map);
     displayMapWithPlayer(map, player);
@@ -14,7 +16,7 @@ int main(int argc, char *argv[])
     if (result == 1)
     {
         result = newGame();
-        while (1)
+        while (isPlayerAlive(player, map))
         {
             switch (displayMovementMenu())
             {

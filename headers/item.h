@@ -12,5 +12,5 @@
 typedef struct Item {
     char name[32];
     int effect;
-    int multiplier;
+    float multiplier;
 } Item;
