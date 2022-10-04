@@ -111,12 +111,12 @@ void displayMapWithoutBars(Map *map)
     }
 }
 
-void displayMapWithPlayer(Map *map)
+void displayMapWithPlayer(Map *map, Player *player)
 {
-    int blockToRewind = map->data[player->coordX][player->coordY];
-    map->data[player->coordX][player->coordY] = PLAYER;
+    int blockToRewind = map->data[player->coordX][player->coordY].value;
+    map->data[player->coordX][player->coordY].value = PLAYER;
     displayMapWithoutBars(map);
-    map->data[player->coordX][player->coordY] = blockToRewind;
+    map->data[player->coordX][player->coordY].value = blockToRewind;
 }
 
 void generateMap(Map *map, int width, int height)
@@ -513,20 +513,9 @@ void generateMap(Map *map, int width, int height)
                     map->data[i][j].isWalkable = 1;
                     map->data[i][j].isVisited = 0;
                 }
-
-}
-
-int isPlayerAlive(Player *player, Map *map){
-    /* First we check the attribute of the player and his life */
-    if(player->isDead == 1 || player->pv == 0){
-        return 0;
+            }
+        }
     }
-    /* Then we check if the player is on a lava block */
-    printf("%d", map->data[player->coordY][player->coordX]);
-    if(map->data[player->coordY][player->coordX] == LAVA){
-        return 0;
-    }
-    return 1;
 }
 
 void generatePlayerCoordinates(Player *player, Map *map)
@@ -535,9 +524,10 @@ void generatePlayerCoordinates(Player *player, Map *map)
     int coordX = rand() % map->width - 1;
     int coordY = rand() % map->height - 1;
 
-    while (map->data[coordX][coordY] == WATER ||
-           map->data[coordX][coordY] == LAVA ||
-           map->data[coordX][coordY] == NENUPHAR)
+    while (map->data[coordX][coordY].value == WATER ||
+           map->data[coordX][coordY].value == LAVA ||
+           map->data[coordX][coordY].value == NENUPHAR ||
+           map->data[coordX][coordY].value == VOID)
     {
         coordX = 1 + (rand() % (map->height - 1));
         coordY = 1 + (rand() % (map->width - 1));
@@ -554,36 +544,36 @@ void move(Player *player, int direction, Map *map)
 
     switch(direction){
         case NORD:
-            if(map->data[player->coordX - 1][player->coordY] != WATER &&
-                map->data[player->coordX - 1][player->coordY] != WALL && 
-                map->data[player->coordX - 1][player->coordY] != VOID){
+            if(map->data[player->coordX - 1][player->coordY].value != WATER &&
+                map->data[player->coordX - 1][player->coordY].value != WALL && 
+                map->data[player->coordX - 1][player->coordY].value != VOID){
                 player->coordX -= 1;
             } else {
                 printf("You can't move North \n");
             }
             break;
         case SUD:
-            if(map->data[player->coordX + 1][player->coordY] != WATER &&
-                map->data[player->coordX + 1][player->coordY] != WALL && 
-                map->data[player->coordX + 1][player->coordY] != VOID){
+            if(map->data[player->coordX + 1][player->coordY].value != WATER &&
+                map->data[player->coordX + 1][player->coordY].value != WALL && 
+                map->data[player->coordX + 1][player->coordY].value != VOID){
                 player->coordX += 1;
             } else {
                 printf("You can't move South \n");
             }
             break;
         case EST:
-            if(map->data[player->coordX][player->coordY + 1] != WATER &&
-                map->data[player->coordX][player->coordY + 1] != WALL && 
-                map->data[player->coordX][player->coordY + 1] != VOID){
+            if(map->data[player->coordX][player->coordY + 1].value != WATER &&
+                map->data[player->coordX][player->coordY + 1].value != WALL && 
+                map->data[player->coordX][player->coordY + 1].value != VOID){
                 player->coordY += 1;
             } else {
                 printf("You can't move East \n");
             }
             break;
         case OUEST:
-            if(map->data[player->coordX][player->coordY - 1] != WATER &&
-                map->data[player->coordX][player->coordY - 1] != WALL &&
-                map->data[player->coordX][player->coordY - 1] != VOID){
+            if(map->data[player->coordX][player->coordY - 1].value != WATER &&
+                map->data[player->coordX][player->coordY - 1].value != WALL &&
+                map->data[player->coordX][player->coordY - 1].value != VOID){
                 player->coordY -= 1;
             } else {
                 printf("You can't move West \n");
@@ -598,11 +588,12 @@ void move(Player *player, int direction, Map *map)
 int isPlayerAlive(Player *player, Map *map){
     /* First we check the attribute of the player and his life */
     if(player->isDead == 1 || player->pv == 0){
+        printf("Player is dead because he lost all his pv !\n");
         return 0;
     }
     /* Then we check if the player is on a lava block */
-    printf("%d", map->data[player->coordY][player->coordX]);
-    if(map->data[player->coordY][player->coordX] == LAVA){
+    if(map->data[player->coordX][player->coordY].value == LAVA){
+        printf("Player is dead because he fall into lava !\n");
         return 0;
     }
     return 1;

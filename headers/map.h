@@ -32,7 +32,7 @@ typedef struct Map
 } Map;
 
 void displayMap(Map *map);
-void displayMapWithPlayer(Map *map /*, Player *player*/);
+void displayMapWithPlayer(Map *map , Player *player);
 void displayMapWithoutBars(Map *map);
 void generateMap(Map *map, int width, int height);
 void freeMap(Map *map);
