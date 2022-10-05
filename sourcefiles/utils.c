@@ -196,6 +196,7 @@ void saveFile(Map *map)
 
 void loadFile(Map *map)
 {
+    // TODO check if folder exists
     FILE *file;
     int fileNumber = 0;
     printf("Please choose your save file emplacement: \n");
