@@ -310,3 +310,176 @@ void loadFile(Map *map)
     displayMapWithoutBars(map);
     //   printf("Not implemented yet.\n");
 }
+
+int fight(Player *player, Mob *mob)
+{
+    int hasFlee = 0;
+    int isDefending = 0;
+    system("clear");
+    printf("              .--.--.    \n");
+    printf("       ,---. /  /    '.  \n");
+    printf("      /__./||  :  /`. /  \n");
+    printf(" ,---.;  ; |;  |  |--`   \n");
+    printf("/___/ \\  | ||  :  ;_     \n");
+    printf("\\   ;  \\ ' | \\  \\    `.  \n");
+    printf(" \\   \\  \\: |  `----.   \\ \n");
+    printf("  ;   \\  ' .  __ \\  \\  | \n");
+    printf("   \\   \\   ' /  /`--'  / \n");
+    printf("    \\   `  ;'--'.     /  \n");
+    printf("     :   \\ |  `--'---'   \n");
+    printf("      '---\"              \n");
+    printf("You are fighting a %s.\n", mob->name);
+    while ((mob->isDead != 1) || (hasFlee != 1) || (player->isDead != 1))
+    {
+        printf("What do you want to do ?\n");
+        printf("1. Attack\n");
+        printf("2. Defend\n");
+        printf("3. Flee\n");
+        printf("Your choice: ");
+        int choice = 0;
+        int answer = 0;
+        scanf("%d", &choice);
+        clearBuffer();
+        Enigma *enigma;
+        switch (choice)
+        {
+        case 1:
+            enigma = generateEnigma();
+            printf("You have to solve this to attack:\n");
+            printf("%d ", enigma->firstNumber);
+            printf("%c ", enigma->operand);
+            printf("%d ", enigma->secondNumber);
+            printf("= ");
+            scanf("%d", &answer);
+            clearBuffer();
+            if (answer == enigma->result)
+            {
+                printf("You have successfully attacked the %s.\n", mob->name);
+                attack(player, mob);
+                printf("%d", mob->isDead);
+            }
+            else
+            {
+                printf("You have failed to attack the %s.\n", mob->name);
+            }
+            break;
+        case 2:
+            enigma = generateEnigma();
+            printf("You have to solve this to defend:\n");
+            printf("%d ", enigma->firstNumber);
+            printf("%c ", enigma->operand);
+            printf("%d ", enigma->secondNumber);
+            printf("= ");
+            scanf("%d", &answer);
+            clearBuffer();
+            if (answer == enigma->result)
+            {
+                printf("You have successfully defended against the %s.\n", mob->name);
+                isDefending = 1;
+            }
+            else
+            {
+                printf("You have failed to defend against the %s.\n", mob->name);
+            }
+            break;
+        case 3:
+            enigma = generateEnigma();
+            printf("You have to solve this to flee:\n");
+            printf("%d ", enigma->firstNumber);
+            printf("%c ", enigma->operand);
+            printf("%d ", enigma->secondNumber);
+            printf("= ");
+            scanf("%d", &answer);
+            clearBuffer();
+            if (answer == enigma->result)
+            {
+                hasFlee = 1;
+            }
+            else
+            {
+                printf("You have failed to flee from the %s.\n", mob->name);
+            }
+
+            break;
+        default:
+            printf("Invalid choice, please try again.\n");
+            clearBuffer();
+            break;
+        }
+        if (hasFlee == 1)
+        {
+            break;
+        }
+        if (isDefending == 1)
+        {
+            printf("The %s has attacked you.\n", mob->name);
+            printf("But you defended yourself.\n");
+            isDefending = 0;
+        }
+        else
+        {
+
+            if (mob->isDead == 0)
+            {
+                printf("The %s has attacked you.\n", mob->name);
+                attackPlayer(mob, player);
+            }
+            else
+            {
+                break;
+            }
+        }
+        answer = 0;
+        isDefending = 0;
+    }
+    if (mob->isDead == 1)
+    {
+        printf("You have killed the %s.\n", mob->name);
+        printf("Press any key to continue.\n");
+        getchar();
+        clearBuffer();
+    }
+    else if (player->isDead == 1)
+    {
+        printf("You have been killed by the %s.\n", mob->name);
+        printf("Game over.\n");
+        return 3;
+    }
+    else if (hasFlee)
+    {
+        printf("You have successfully fled from the %s.\n", mob->name);
+        printf("Press any key to continue.\n");
+        getchar();
+        clearBuffer();
+    }
+    return 0;
+}
+
+Enigma *generateEnigma()
+{
+    srand(time(NULL));
+    Enigma *enigma = (Enigma *)malloc(sizeof(Enigma));
+    int randomResult = rand() % 2;
+    switch (randomResult)
+    {
+    case 0:
+        enigma->operand = '+';
+        enigma->firstNumber = rand() % 10;
+        enigma->secondNumber = rand() % 10;
+        enigma->result = enigma->firstNumber + enigma->secondNumber;
+        break;
+    case 1:
+        enigma->operand = '-';
+        enigma->firstNumber = rand() % 10;
+        enigma->secondNumber = rand() % 10;
+        enigma->result = enigma->firstNumber - enigma->secondNumber;
+        break;
+    case 2:
+        enigma->operand = '*';
+        enigma->firstNumber = rand() % 10;
+        enigma->secondNumber = rand() % 10;
+        enigma->result = enigma->firstNumber * enigma->secondNumber;
+        break;
+    }
+    return enigma;
+}

@@ -11,4 +11,7 @@ typedef struct Mob
     int coordX;
     int coordY;
     int state;
+    int isDead;
 } Mob;
+
+void freeMobs(Mob **mobs, int nbMobs);

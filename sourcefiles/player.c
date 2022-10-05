@@ -2,7 +2,8 @@
 #include "../headers/map.h"
 
 /* Method which init the player with default state and default param */
-void initPlayer(Player *player){
+void initPlayer(Player *player)
+{
     player->pv = 100;
     player->attack = 10;
     player->state = DEFAULT;
@@ -16,22 +17,25 @@ void initPlayer(Player *player){
 }
 
 /* Method which allow the player to attack a mob */
-void attack(Player *player, Mob *mob){
+void attack(Player *player, Mob *mob)
+{
 
     printf("Player is attacking the mob with %d damages", player->attack);
     mob->pv -= player->attack;
-
+    if (mob->pv <= 0)
+    {
+        mob->isDead = 1;
+    }
 }
 
-/* Method which allow the player to defend himself against a mob */
-void defend(Player *player, Mob *mob){
-
-    int defenseLuck = rand() % 100;
-
-    if(defenseLuck >= 50){
-        mob->attack /= 1.5;
+void attackPlayer(Mob *mob, Player *player)
+{
+    printf("Mob is attacking the player with %d damages", mob->attack);
+    player->pv -= mob->attack;
+    if (player->pv <= 0)
+    {
+        player->isDead = 1;
     }
-
 }
 
 /* Method which enable the player to heal himself */
@@ -59,8 +63,8 @@ void use(Player *player, Item *item){
 }
 
 /* Method which enable the player to destoy the object next to the player */
-void destroy(Player player){
-
+void destroy(Player player)
+{
 }
 
 /* Method which add an item to the players inventory */
