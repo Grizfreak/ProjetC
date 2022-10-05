@@ -11,9 +11,9 @@ int main(int argc, char *argv[])
 
     initPlayer(player);
 
-    generateMap(map, 20, 20);
+    generateMap(map, 40, 40);
     generatePlayerCoordinates(player, map);
-    nbMobsMax = (int)(round((5.0 / 100.0) * (map->height * map->width)));
+    nbMobsMax = (int)(round((2.5 / 100.0) * (map->height * map->width)));
     mobs = (Mob **)malloc(sizeof(Mob *) * nbMobsMax);
     printf("nbMobsMax = %d\n", nbMobsMax);
     generateMobs(mobs, nbMobsMax, map);

@@ -14,7 +14,8 @@
 #define IS_MOVING_SMTH 13
 
 /* Player structure */
-typedef struct Player {
+typedef struct Player
+{
     char name[32];
     int coordX;
     int coordY;
@@ -32,6 +33,7 @@ void initPlayer(Player *player);
 
 /* Method which allow the player to attack a mob */
 void attack(Player *player, Mob *mob);
+void attackPlayer(Mob *mob, Player *player);
 
 /* Method which allow the player to defend himself against a mob */
 void defend(Player *player, Mob *mob);

@@ -56,7 +56,7 @@ void displayMap(Map *map)
 
 void displayMapWithoutBars(Map *map)
 {
-    // system("clear");
+    system("clear");
     int endofline = 0;
     for (int i = 0; i < map->height; i++)
     {
@@ -98,7 +98,7 @@ void displayMapWithoutBars(Map *map)
                 printf("P ");
                 break;
             case MOB:
-                printf("M ");
+                printf("👾");
                 break;
             default:
                 printf("%d ", map->data[i][j].value);
@@ -535,8 +535,8 @@ void generateMap(Map *map, int width, int height)
 void generatePlayerCoordinates(Player *player, Map *map)
 {
 
-    int coordX = rand() % map->width - 1;
-    int coordY = rand() % map->height - 1;
+    int coordX = 1 + (rand() % (map->width - 1));
+    int coordY = 1 + (rand() % (map->height - 1));
 
     while (map->data[coordX][coordY].value == WATER ||
            map->data[coordX][coordY].value == LAVA ||

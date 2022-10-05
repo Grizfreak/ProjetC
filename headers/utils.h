@@ -4,6 +4,13 @@
 #include <string.h>
 #include "../headers/map.h"
 
+typedef struct Enigma
+{
+    char operand;
+    int result;
+    int firstNumber;
+    int secondNumber;
+} Enigma;
 /* Method which display default menu */
 /* The player can start a new game, load a saved one or quit */
 int displayMenu();
@@ -29,3 +36,5 @@ char displayMovementMenu();
 int displayFightMenu();
 
 int fight(Player *player, Mob *mob);
+
+Enigma *generateEnigma();
