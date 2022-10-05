@@ -95,7 +95,10 @@ void displayMapWithoutBars(Map *map)
                 printf("\033[91m≈ \033[0m");
                 break;
             case PLAYER:
-                printf(" P");
+                printf("P ");
+                break;
+            case MOB:
+                printf("M ");
                 break;
             default:
                 printf("%d ", map->data[i][j].value);
@@ -111,12 +114,23 @@ void displayMapWithoutBars(Map *map)
     }
 }
 
-void displayMapWithPlayer(Map *map, Player *player)
+void displayMapWithPlayer(Map *map, Player *player, Mob **mobs, int nbMobs)
 {
+    int *blocksToRewind = malloc(sizeof(int) * nbMobs);
+    for (int i = 0; i < nbMobs; i++)
+    {
+        blocksToRewind[i] = map->data[mobs[i]->coordX][mobs[i]->coordY].value;
+        map->data[mobs[i]->coordX][mobs[i]->coordY].value = MOB;
+    }
     int blockToRewind = map->data[player->coordX][player->coordY].value;
     map->data[player->coordX][player->coordY].value = PLAYER;
     displayMapWithoutBars(map);
     map->data[player->coordX][player->coordY].value = blockToRewind;
+    for (int i = 0; i < nbMobs; i++)
+    {
+        map->data[mobs[i]->coordX][mobs[i]->coordY].value = blocksToRewind[i];
+    }
+    free(blocksToRewind);
 }
 
 void generateMap(Map *map, int width, int height)
@@ -539,7 +553,7 @@ void generatePlayerCoordinates(Player *player, Map *map)
     printf("CoordX : %d, CoordY : %d\n", coordX, coordY);
 }
 
-void move(Player *player, int direction, Map *map)
+int move(Player *player, int direction, Map *map)
 {
 
     switch (direction)
@@ -550,10 +564,12 @@ void move(Player *player, int direction, Map *map)
             map->data[player->coordX - 1][player->coordY].value != VOID)
         {
             player->coordX -= 1;
+            return 0;
         }
         else
         {
             printf("You can't move North \n");
+            return 1;
         }
         break;
     case SUD:
@@ -562,10 +578,12 @@ void move(Player *player, int direction, Map *map)
             map->data[player->coordX + 1][player->coordY].value != VOID)
         {
             player->coordX += 1;
+            return 0;
         }
         else
         {
             printf("You can't move South \n");
+            return 1;
         }
         break;
     case EST:
@@ -574,10 +592,12 @@ void move(Player *player, int direction, Map *map)
             map->data[player->coordX][player->coordY + 1].value != VOID)
         {
             player->coordY += 1;
+            return 0;
         }
         else
         {
             printf("You can't move East \n");
+            return 1;
         }
         break;
     case OUEST:
@@ -586,14 +606,17 @@ void move(Player *player, int direction, Map *map)
             map->data[player->coordX][player->coordY - 1].value != VOID)
         {
             player->coordY -= 1;
+            return 0;
         }
         else
         {
             printf("You can't move West \n");
+            return 1;
         }
         break;
     default:
         printf("Uknown direction");
+        return 1;
     }
 }
 
@@ -612,6 +635,68 @@ int isPlayerAlive(Player *player, Map *map)
         return 0;
     }
     return 1;
+}
+
+void generateMobs(Mob **mobs, int nbMobsMax, Map *map)
+{
+    for (int i = 0; i < nbMobsMax; i++)
+    {
+        mobs[i] = malloc(sizeof(Mob));
+        mobs[i]->pv = 10;
+        mobs[i]->coordX = 1 + (rand() % (map->width - 1));
+        mobs[i]->coordY = 1 + (rand() % (map->height - 1));
+        printf("Mob %d : CoordX : %d, CoordY : %d\n", i, mobs[i]->coordX, mobs[i]->coordY);
+        while (map->data[mobs[i]->coordX][mobs[i]->coordY].value == WATER ||
+               map->data[mobs[i]->coordX][mobs[i]->coordY].value == LAVA ||
+               map->data[mobs[i]->coordX][mobs[i]->coordY].value == NENUPHAR ||
+               map->data[mobs[i]->coordX][mobs[i]->coordY].value == VOID)
+        {
+            mobs[i]->coordX = 1 + (rand() % (map->height - 1));
+            mobs[i]->coordY = 1 + (rand() % (map->width - 1));
+        }
+        printf("Mob %d : CoordX : %d, CoordY : %d\n", i, mobs[i]->coordX, mobs[i]->coordY);
+    }
+}
+
+void moveMob(Mob *mob, int direction, Map *map)
+{
+    switch (direction)
+    {
+    case NORD:
+        if (map->data[mob->coordX - 1][mob->coordY].value != WATER &&
+            map->data[mob->coordX - 1][mob->coordY].value != WALL &&
+            map->data[mob->coordX - 1][mob->coordY].value != VOID)
+        {
+            mob->coordX -= 1;
+        }
+        break;
+    case SUD:
+        if (map->data[mob->coordX + 1][mob->coordY].value != WATER &&
+            map->data[mob->coordX + 1][mob->coordY].value != WALL &&
+            map->data[mob->coordX + 1][mob->coordY].value != VOID)
+        {
+            mob->coordX += 1;
+        }
+        break;
+    case EST:
+        if (map->data[mob->coordX][mob->coordY + 1].value != WATER &&
+            map->data[mob->coordX][mob->coordY + 1].value != WALL &&
+            map->data[mob->coordX][mob->coordY + 1].value != VOID)
+        {
+            mob->coordY += 1;
+        }
+        break;
+    case OUEST:
+        if (map->data[mob->coordX][mob->coordY - 1].value != WATER &&
+            map->data[mob->coordX][mob->coordY - 1].value != WALL &&
+            map->data[mob->coordX][mob->coordY - 1].value != VOID)
+        {
+            mob->coordY -= 1;
+        }
+        break;
+    default:
+        printf("Uknown direction");
+    }
 }
 
 void freeMap(Map *map)

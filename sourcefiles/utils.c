@@ -310,3 +310,25 @@ void loadFile(Map *map)
     displayMapWithoutBars(map);
     //   printf("Not implemented yet.\n");
 }
+
+int fight(Player *player, Mob *mob)
+{
+    system("clear");
+    printf("              .--.--.    \n");
+    printf("       ,---. /  /    '.  \n");
+    printf("      /__./||  :  /`. /  \n");
+    printf(" ,---.;  ; |;  |  |--`   \n");
+    printf("/___/ \\  | ||  :  ;_     \n");
+    printf("\\   ;  \\ ' | \\  \\    `.  \n");
+    printf(" \\   \\  \\: |  `----.   \\ \n");
+    printf("  ;   \\  ' .  __ \\  \\  | \n");
+    printf("   \\   \\   ' /  /`--'  / \n");
+    printf("    \\   `  ;'--'.     /  \n");
+    printf("     :   \\ |  `--'---'   \n");
+    printf("      '---\"              \n");
+    printf("You are fighting a %s.\n", mob->name);
+    while (1)
+    {
+    }
+    return 0;
+}

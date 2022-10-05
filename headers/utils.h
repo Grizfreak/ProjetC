@@ -4,7 +4,7 @@
 #include <string.h>
 #include "../headers/map.h"
 
-/* Method which display default menu */ 
+/* Method which display default menu */
 /* The player can start a new game, load a saved one or quit */
 int displayMenu();
 
@@ -27,3 +27,5 @@ char displayMovementMenu();
 /* Method which display fight menu to the player */
 /* He can attack the monster, defend himself or use an item from his inventory */
 int displayFightMenu();
+
+int fight(Player *player, Mob *mob);
