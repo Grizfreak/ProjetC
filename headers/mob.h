@@ -13,3 +13,5 @@ typedef struct Mob
     int state;
     int isDead;
 } Mob;
+
+void freeMobs(Mob **mobs, int nbMobs);

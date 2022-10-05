@@ -11,7 +11,7 @@ int main(int argc, char *argv[])
 
     initPlayer(player);
 
-    generateMap(map, 40, 40);
+    generateMap(map, 20, 20);
     generatePlayerCoordinates(player, map);
     nbMobsMax = (int)(round((2.5 / 100.0) * (map->height * map->width)));
     mobs = (Mob **)malloc(sizeof(Mob *) * nbMobsMax);
@@ -46,9 +46,12 @@ int main(int argc, char *argv[])
             // If there is mob on the player's position
             for (int i = 0; i < nbMobsMax; i++)
             {
-                if (mobs[i]->coordX == player->coordX && mobs[i]->coordY == player->coordY)
+                if (mobs[i]->isDead == 0)
                 {
-                    fight(player, mobs[i]);
+                    if (mobs[i]->coordX == player->coordX && mobs[i]->coordY == player->coordY)
+                    {
+                        fight(player, mobs[i]);
+                    }
                 }
             }
 
@@ -57,15 +60,18 @@ int main(int argc, char *argv[])
                 // move all mobs
                 for (int i = 0; i < nbMobsMax; i++)
                 {
-                    moveMob(mobs[i], rand() % 4, map);
+                    moveMob(mobs[i], map, player, mobs, nbMobsMax);
                 }
             }
             // If mob is on the player's position
             for (int i = 0; i < nbMobsMax; i++)
             {
-                if (mobs[i]->coordX == player->coordX && mobs[i]->coordY == player->coordY)
+                if (mobs[i]->isDead == 0)
                 {
-                    fight(player, mobs[i]);
+                    if (mobs[i]->coordX == player->coordX && mobs[i]->coordY == player->coordY)
+                    {
+                        fight(player, mobs[i]);
+                    }
                 }
             }
             displayMapWithPlayer(map, player, mobs, nbMobsMax);
@@ -79,10 +85,22 @@ int main(int argc, char *argv[])
     {
         saveFile(map);
         freeMap(map);
+        for (int i = 0; i < nbMobsMax; i++)
+        {
+            free(mobs[i]);
+        }
+        free(mobs);
+        free(player);
+        free(map);
         return 0;
     }
     freeMap(map);
-    free(map);
+    for (int i = 0; i < nbMobsMax; i++)
+    {
+        free(mobs[i]);
+    }
+    free(mobs);
     free(player);
+    free(map);
     return 0;
 }

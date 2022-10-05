@@ -120,7 +120,10 @@ void displayMapWithPlayer(Map *map, Player *player, Mob **mobs, int nbMobs)
     for (int i = 0; i < nbMobs; i++)
     {
         blocksToRewind[i] = map->data[mobs[i]->coordX][mobs[i]->coordY].value;
-        map->data[mobs[i]->coordX][mobs[i]->coordY].value = MOB;
+        if (mobs[i]->isDead == 0)
+        {
+            map->data[mobs[i]->coordX][mobs[i]->coordY].value = MOB;
+        }
     }
     int blockToRewind = map->data[player->coordX][player->coordY].value;
     map->data[player->coordX][player->coordY].value = PLAYER;
@@ -658,45 +661,140 @@ void generateMobs(Mob **mobs, int nbMobsMax, Map *map)
     }
 }
 
-void moveMob(Mob *mob, int direction, Map *map)
+void moveMob(Mob *mob, Map *map, Player *player, Mob **mobs, int nbMobs)
 {
-    switch (direction)
+    // check if player is near
+    int isPlayerNear = 0;
+    for (int i = 0; i < 15; i++)
     {
-    case NORD:
-        if (map->data[mob->coordX - 1][mob->coordY].value != WATER &&
-            map->data[mob->coordX - 1][mob->coordY].value != WALL &&
-            map->data[mob->coordX - 1][mob->coordY].value != VOID)
+        for (int j = 0; j < 15; j++)
         {
-            mob->coordX -= 1;
+            if (mob->coordX + i == player->coordX && mob->coordY + j == player->coordY)
+            {
+                isPlayerNear = 1;
+            }
+            if (mob->coordX - i == player->coordX && mob->coordY - j == player->coordY)
+            {
+                isPlayerNear = 1;
+            }
         }
-        break;
-    case SUD:
-        if (map->data[mob->coordX + 1][mob->coordY].value != WATER &&
-            map->data[mob->coordX + 1][mob->coordY].value != WALL &&
-            map->data[mob->coordX + 1][mob->coordY].value != VOID)
-        {
-            mob->coordX += 1;
-        }
-        break;
-    case EST:
-        if (map->data[mob->coordX][mob->coordY + 1].value != WATER &&
-            map->data[mob->coordX][mob->coordY + 1].value != WALL &&
-            map->data[mob->coordX][mob->coordY + 1].value != VOID)
-        {
-            mob->coordY += 1;
-        }
-        break;
-    case OUEST:
-        if (map->data[mob->coordX][mob->coordY - 1].value != WATER &&
-            map->data[mob->coordX][mob->coordY - 1].value != WALL &&
-            map->data[mob->coordX][mob->coordY - 1].value != VOID)
-        {
-            mob->coordY -= 1;
-        }
-        break;
-    default:
-        printf("Uknown direction");
     }
+    // if yes move to player
+    if (isPlayerNear == 1)
+    {
+        if (mob->coordX < player->coordX)
+        {
+            if ((map->data[mob->coordX + 1][mob->coordY].value != WATER &&
+                 map->data[mob->coordX + 1][mob->coordY].value != WALL &&
+                 map->data[mob->coordX + 1][mob->coordY].value != VOID))
+            {
+                if (checkMobAtPosition(mob, map, mob->coordX + 1, mob->coordY, mobs, nbMobs) == 0)
+                {
+                    mob->coordX += 1;
+                }
+            }
+        }
+        else if (mob->coordX > player->coordX)
+        {
+            if (map->data[mob->coordX - 1][mob->coordY].value != WATER &&
+                map->data[mob->coordX - 1][mob->coordY].value != WALL &&
+                map->data[mob->coordX - 1][mob->coordY].value != VOID)
+            {
+                if (checkMobAtPosition(mob, map, mob->coordX - 1, mob->coordY, mobs, nbMobs) == 0)
+                {
+                    mob->coordX -= 1;
+                }
+            }
+        }
+        else if (mob->coordY < player->coordY)
+        {
+            if (map->data[mob->coordX][mob->coordY + 1].value != WATER &&
+                map->data[mob->coordX][mob->coordY + 1].value != WALL &&
+                map->data[mob->coordX][mob->coordY + 1].value != VOID)
+            {
+                if (checkMobAtPosition(mob, map, mob->coordX, mob->coordY + 1, mobs, nbMobs) == 0)
+                {
+                    mob->coordY += 1;
+                }
+            }
+        }
+        else if (mob->coordY > player->coordY)
+        {
+            if (map->data[mob->coordX][mob->coordY - 1].value != WATER &&
+                map->data[mob->coordX][mob->coordY - 1].value != WALL &&
+                map->data[mob->coordX][mob->coordY - 1].value != VOID)
+            {
+                if (checkMobAtPosition(mob, map, mob->coordX, mob->coordY - 1, mobs, nbMobs) == 0)
+                {
+                    mob->coordY -= 1;
+                }
+            }
+        }
+    }
+    else
+    {
+        // else move randomly
+        int direction = rand() % 3;
+        switch (direction)
+        {
+        case NORD:
+            if (map->data[mob->coordX - 1][mob->coordY].value != WATER &&
+                map->data[mob->coordX - 1][mob->coordY].value != WALL &&
+                map->data[mob->coordX - 1][mob->coordY].value != VOID)
+            {
+                if (checkMobAtPosition(mob, map, mob->coordX - 1, mob->coordY, mobs, nbMobs) == 0)
+                {
+                    mob->coordX -= 1;
+                }
+            }
+            break;
+        case SUD:
+            if (map->data[mob->coordX + 1][mob->coordY].value != WATER &&
+                map->data[mob->coordX + 1][mob->coordY].value != WALL &&
+                map->data[mob->coordX + 1][mob->coordY].value != VOID)
+            {
+                if (checkMobAtPosition(mob, map, mob->coordX + 1, mob->coordY, mobs, nbMobs) == 0)
+                {
+                    mob->coordX += 1;
+                }
+            }
+            break;
+        case EST:
+            if (map->data[mob->coordX][mob->coordY + 1].value != WATER &&
+                map->data[mob->coordX][mob->coordY + 1].value != WALL &&
+                map->data[mob->coordX][mob->coordY + 1].value != VOID)
+            {
+                if (checkMobAtPosition(mob, map, mob->coordX, mob->coordY + 1, mobs, nbMobs) == 0)
+                {
+                    mob->coordY += 1;
+                }
+            }
+            break;
+        case OUEST:
+            if (map->data[mob->coordX][mob->coordY - 1].value != WATER &&
+                map->data[mob->coordX][mob->coordY - 1].value != WALL &&
+                map->data[mob->coordX][mob->coordY - 1].value != VOID)
+            {
+                if (checkMobAtPosition(mob, map, mob->coordX, mob->coordY - 1, mobs, nbMobs) == 0)
+                {
+                    mob->coordY -= 1;
+                }
+            }
+            break;
+        }
+    }
+}
+
+int checkMobAtPosition(Mob *mob, Map *map, int height, int width, Mob **mobs, int nbMobs)
+{
+    for (int i = 0; i < nbMobs; i++)
+    {
+        if (mobs[i]->coordX == height && mobs[i]->coordY == width)
+        {
+            return 1;
+        }
+    }
+    return 0;
 }
 
 void freeMap(Map *map)
