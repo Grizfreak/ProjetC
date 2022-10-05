@@ -22,7 +22,7 @@ void displayMap(Map *map)
             case NENUPHAR:
                 printf("\033[32m| ɞ |\033[0m");
                 break;
-            case WALL:
+            case WALL_ITEM:
                 printf("\033[90m| ■ |\033[0m");
                 break;
             case STONE:
@@ -76,7 +76,7 @@ void displayMapWithoutBars(Map *map)
             case NENUPHAR:
                 printf("\033[32mɞ \033[0m");
                 break;
-            case WALL:
+            case WALL_ITEM:
                 printf("\033[90m■ \033[0m");
                 break;
             case STONE:
@@ -95,7 +95,7 @@ void displayMapWithoutBars(Map *map)
                 printf("\033[91m≈ \033[0m");
                 break;
             case PLAYER:
-                printf("P ");
+                printf("🐈");
                 break;
             case MOB:
                 printf("👾");
@@ -507,7 +507,7 @@ void generateMap(Map *map, int width, int height)
                 if (rand() % 100 < 2)
                 {
                     tab[map->data[i][j].value]--;
-                    map->data[i][j].value = WALL;
+                    map->data[i][j].value = WALL_ITEM;
                     map->data[i][j].isWalkable = 0;
                     map->data[i][j].isVisited = 0;
                 }
@@ -556,18 +556,15 @@ void generatePlayerCoordinates(Player *player, Map *map)
     printf("CoordX : %d, CoordY : %d\n", coordX, coordY);
 }
 
-int move(Player *player, int direction, Map *map)
+int move(Player *player, int direction, Map *map, Item **items)
 {
-
+    /* We manage the direction of the player */
     switch (direction)
     {
     case NORD:
-        if (map->data[player->coordX - 1][player->coordY].value != WATER &&
-            map->data[player->coordX - 1][player->coordY].value != WALL &&
-            map->data[player->coordX - 1][player->coordY].value != VOID)
+        if (map->data[player->coordX - 1][player->coordY].isWalkable)
         {
             player->coordX -= 1;
-            return 0;
         }
         else
         {
@@ -576,12 +573,9 @@ int move(Player *player, int direction, Map *map)
         }
         break;
     case SUD:
-        if (map->data[player->coordX + 1][player->coordY].value != WATER &&
-            map->data[player->coordX + 1][player->coordY].value != WALL &&
-            map->data[player->coordX + 1][player->coordY].value != VOID)
+        if (map->data[player->coordX + 1][player->coordY].isWalkable)
         {
             player->coordX += 1;
-            return 0;
         }
         else
         {
@@ -590,12 +584,9 @@ int move(Player *player, int direction, Map *map)
         }
         break;
     case EST:
-        if (map->data[player->coordX][player->coordY + 1].value != WATER &&
-            map->data[player->coordX][player->coordY + 1].value != WALL &&
-            map->data[player->coordX][player->coordY + 1].value != VOID)
+        if (map->data[player->coordX][player->coordY + 1].isWalkable)
         {
             player->coordY += 1;
-            return 0;
         }
         else
         {
@@ -604,12 +595,9 @@ int move(Player *player, int direction, Map *map)
         }
         break;
     case OUEST:
-        if (map->data[player->coordX][player->coordY - 1].value != WATER &&
-            map->data[player->coordX][player->coordY - 1].value != WALL &&
-            map->data[player->coordX][player->coordY - 1].value != VOID)
+        if (map->data[player->coordX][player->coordY - 1].isWalkable)
         {
             player->coordY -= 1;
-            return 0;
         }
         else
         {
@@ -620,6 +608,40 @@ int move(Player *player, int direction, Map *map)
     default:
         printf("Uknown direction");
         return 1;
+    }
+
+    /* Then, we're looking if there is a chest at the players coordinate
+       And we add the item in the chest in the players inventory */
+    if (map->data[player->coordX][player->coordY].value == CHEST)
+    {
+        Item *item = generateRandomItem(items);
+        printf("Item in the chest : %s\n", item->name);
+        askPlayerToAddItem(player, item);
+
+        /* We replace the chest block */
+        map->data[player->coordX][player->coordY].value = GRASS;
+    }
+    return 0;
+}
+
+void askPlayerToAddItem(Player *player, Item *item)
+{
+
+    int response = 0;
+    printf("Do you want to add this item to your inventory ?\n");
+    printf("1. Yes\n2. No\nYour choice : ");
+    scanf("%d", &response);
+
+    switch (response)
+    {
+    case 1:
+        addItemToInventory(item, player);
+        break;
+    case 2:
+        printf("Item \"%s\" was not added to your inventory\n", item->name);
+        break;
+    default:
+        printf("Uknown character, bye bye your chest !\n");
     }
 }
 
@@ -652,7 +674,8 @@ void generateMobs(Mob **mobs, int nbMobsMax, Map *map)
         while (map->data[mobs[i]->coordX][mobs[i]->coordY].value == WATER ||
                map->data[mobs[i]->coordX][mobs[i]->coordY].value == LAVA ||
                map->data[mobs[i]->coordX][mobs[i]->coordY].value == NENUPHAR ||
-               map->data[mobs[i]->coordX][mobs[i]->coordY].value == VOID)
+               map->data[mobs[i]->coordX][mobs[i]->coordY].value == VOID ||
+               map->data[mobs[i]->coordX][mobs[i]->coordY].value == CHEST)
         {
             mobs[i]->coordX = 1 + (rand() % (map->height - 1));
             mobs[i]->coordY = 1 + (rand() % (map->width - 1));
@@ -684,9 +707,11 @@ void moveMob(Mob *mob, Map *map, Player *player, Mob **mobs, int nbMobs)
     {
         if (mob->coordX < player->coordX)
         {
-            if ((map->data[mob->coordX + 1][mob->coordY].value != WATER &&
-                 map->data[mob->coordX + 1][mob->coordY].value != WALL &&
-                 map->data[mob->coordX + 1][mob->coordY].value != VOID))
+            if (map->data[mob->coordX + 1][mob->coordY].value != WATER &&
+                map->data[mob->coordX + 1][mob->coordY].value != WALL &&
+                map->data[mob->coordX + 1][mob->coordY].value != VOID &&
+                map->data[mob->coordX + 1][mob->coordY].value != CHEST &&
+                map->data[mob->coordX + 1][mob->coordY].value != LAVA)
             {
                 if (checkMobAtPosition(mob, map, mob->coordX + 1, mob->coordY, mobs, nbMobs) == 0)
                 {
@@ -698,7 +723,9 @@ void moveMob(Mob *mob, Map *map, Player *player, Mob **mobs, int nbMobs)
         {
             if (map->data[mob->coordX - 1][mob->coordY].value != WATER &&
                 map->data[mob->coordX - 1][mob->coordY].value != WALL &&
-                map->data[mob->coordX - 1][mob->coordY].value != VOID)
+                map->data[mob->coordX - 1][mob->coordY].value != VOID &&
+                map->data[mob->coordX + 1][mob->coordY].value != CHEST &&
+                map->data[mob->coordX + 1][mob->coordY].value != LAVA)
             {
                 if (checkMobAtPosition(mob, map, mob->coordX - 1, mob->coordY, mobs, nbMobs) == 0)
                 {
@@ -710,7 +737,9 @@ void moveMob(Mob *mob, Map *map, Player *player, Mob **mobs, int nbMobs)
         {
             if (map->data[mob->coordX][mob->coordY + 1].value != WATER &&
                 map->data[mob->coordX][mob->coordY + 1].value != WALL &&
-                map->data[mob->coordX][mob->coordY + 1].value != VOID)
+                map->data[mob->coordX][mob->coordY + 1].value != VOID &&
+                map->data[mob->coordX + 1][mob->coordY].value != CHEST &&
+                map->data[mob->coordX + 1][mob->coordY].value != LAVA)
             {
                 if (checkMobAtPosition(mob, map, mob->coordX, mob->coordY + 1, mobs, nbMobs) == 0)
                 {
@@ -722,7 +751,9 @@ void moveMob(Mob *mob, Map *map, Player *player, Mob **mobs, int nbMobs)
         {
             if (map->data[mob->coordX][mob->coordY - 1].value != WATER &&
                 map->data[mob->coordX][mob->coordY - 1].value != WALL &&
-                map->data[mob->coordX][mob->coordY - 1].value != VOID)
+                map->data[mob->coordX][mob->coordY - 1].value != VOID &&
+                map->data[mob->coordX + 1][mob->coordY].value != CHEST &&
+                map->data[mob->coordX + 1][mob->coordY].value != LAVA)
             {
                 if (checkMobAtPosition(mob, map, mob->coordX, mob->coordY - 1, mobs, nbMobs) == 0)
                 {
@@ -740,7 +771,9 @@ void moveMob(Mob *mob, Map *map, Player *player, Mob **mobs, int nbMobs)
         case NORD:
             if (map->data[mob->coordX - 1][mob->coordY].value != WATER &&
                 map->data[mob->coordX - 1][mob->coordY].value != WALL &&
-                map->data[mob->coordX - 1][mob->coordY].value != VOID)
+                map->data[mob->coordX - 1][mob->coordY].value != VOID &&
+                map->data[mob->coordX + 1][mob->coordY].value != CHEST &&
+                map->data[mob->coordX + 1][mob->coordY].value != LAVA)
             {
                 if (checkMobAtPosition(mob, map, mob->coordX - 1, mob->coordY, mobs, nbMobs) == 0)
                 {
@@ -751,7 +784,9 @@ void moveMob(Mob *mob, Map *map, Player *player, Mob **mobs, int nbMobs)
         case SUD:
             if (map->data[mob->coordX + 1][mob->coordY].value != WATER &&
                 map->data[mob->coordX + 1][mob->coordY].value != WALL &&
-                map->data[mob->coordX + 1][mob->coordY].value != VOID)
+                map->data[mob->coordX + 1][mob->coordY].value != VOID &&
+                map->data[mob->coordX + 1][mob->coordY].value != CHEST &&
+                map->data[mob->coordX + 1][mob->coordY].value != LAVA)
             {
                 if (checkMobAtPosition(mob, map, mob->coordX + 1, mob->coordY, mobs, nbMobs) == 0)
                 {
@@ -762,7 +797,9 @@ void moveMob(Mob *mob, Map *map, Player *player, Mob **mobs, int nbMobs)
         case EST:
             if (map->data[mob->coordX][mob->coordY + 1].value != WATER &&
                 map->data[mob->coordX][mob->coordY + 1].value != WALL &&
-                map->data[mob->coordX][mob->coordY + 1].value != VOID)
+                map->data[mob->coordX][mob->coordY + 1].value != VOID &&
+                map->data[mob->coordX + 1][mob->coordY].value != CHEST &&
+                map->data[mob->coordX + 1][mob->coordY].value != LAVA)
             {
                 if (checkMobAtPosition(mob, map, mob->coordX, mob->coordY + 1, mobs, nbMobs) == 0)
                 {
@@ -773,7 +810,9 @@ void moveMob(Mob *mob, Map *map, Player *player, Mob **mobs, int nbMobs)
         case OUEST:
             if (map->data[mob->coordX][mob->coordY - 1].value != WATER &&
                 map->data[mob->coordX][mob->coordY - 1].value != WALL &&
-                map->data[mob->coordX][mob->coordY - 1].value != VOID)
+                map->data[mob->coordX][mob->coordY - 1].value != VOID &&
+                map->data[mob->coordX + 1][mob->coordY].value != CHEST &&
+                map->data[mob->coordX + 1][mob->coordY].value != LAVA)
             {
                 if (checkMobAtPosition(mob, map, mob->coordX, mob->coordY - 1, mobs, nbMobs) == 0)
                 {

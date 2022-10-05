@@ -2,10 +2,13 @@
 #include "../headers/item.h"
 #include "../headers/utils.h"
 
+Item **items;
+
 int main(int argc, char *argv[])
 {
     Map *map = (Map *)malloc(sizeof(Map));
     Player *player = (Player *)malloc(sizeof(Player));
+    items = initItems();
     Mob **mobs;
     int nbMobsMax;
 
@@ -29,16 +32,16 @@ int main(int argc, char *argv[])
             switch (displayMovementMenu())
             {
             case 'z':
-                moveResult = move(player, NORD, map);
+                moveResult = move(player, NORD, map, items);
                 break;
             case 's':
-                moveResult = move(player, SUD, map);
+                moveResult = move(player, SUD, map, items);
                 break;
             case 'd':
-                moveResult = move(player, EST, map);
+                moveResult = move(player, EST, map, items);
                 break;
             case 'q':
-                moveResult = move(player, OUEST, map);
+                moveResult = move(player, OUEST, map, items);
                 break;
             default:
                 break;
@@ -75,6 +78,7 @@ int main(int argc, char *argv[])
                 }
             }
             displayMapWithPlayer(map, player, mobs, nbMobsMax);
+            displayPlayerInventory(player);
         }
     }
     else if (result == 2)
@@ -91,6 +95,7 @@ int main(int argc, char *argv[])
         }
         free(mobs);
         free(player);
+        freeItems(items);
         free(map);
         return 0;
     }
