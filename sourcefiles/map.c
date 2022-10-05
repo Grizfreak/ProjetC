@@ -22,7 +22,7 @@ void displayMap(Map *map)
             case NENUPHAR:
                 printf("\033[32m| ɞ |\033[0m");
                 break;
-            case WALL:
+            case WALL_ITEM:
                 printf("\033[90m| ■ |\033[0m");
                 break;
             case STONE:
@@ -76,7 +76,7 @@ void displayMapWithoutBars(Map *map)
             case NENUPHAR:
                 printf("\033[32mɞ \033[0m");
                 break;
-            case WALL:
+            case WALL_ITEM:
                 printf("\033[90m■ \033[0m");
                 break;
             case STONE:
@@ -95,7 +95,7 @@ void displayMapWithoutBars(Map *map)
                 printf("\033[91m≈ \033[0m");
                 break;
             case PLAYER:
-                printf(" P");
+                printf("🐈");
                 break;
             default:
                 printf("%d ", map->data[i][j].value);
@@ -490,7 +490,7 @@ void generateMap(Map *map, int width, int height)
                 if (rand() % 100 < 2)
                 {
                     tab[map->data[i][j].value]--;
-                    map->data[i][j].value = WALL;
+                    map->data[i][j].value = WALL_ITEM;
                     map->data[i][j].isWalkable = 0;
                     map->data[i][j].isVisited = 0;
                 }
@@ -539,61 +539,72 @@ void generatePlayerCoordinates(Player *player, Map *map)
     printf("CoordX : %d, CoordY : %d\n", coordX, coordY);
 }
 
-void move(Player *player, int direction, Map *map)
+void move(Player *player, int direction, Map *map, Item **items)
 {
+    /* We manage the direction of the player */
+    switch(direction){
+        case NORD:
+            if(map->data[player->coordX - 1][player->coordY].isWalkable){
+                player->coordX -= 1;
+            } else {
+                printf("You can't move North \n");
+            }
+            break;
+        case SUD:
+            if(map->data[player->coordX + 1][player->coordY].isWalkable){
+                player->coordX += 1;
+            } else {
+                printf("You can't move South \n");
+            }
+            break;
+        case EST:
+            if(map->data[player->coordX][player->coordY + 1].isWalkable){
+                player->coordY += 1;
+            } else {
+                printf("You can't move East \n");
+            }
+            break;
+        case OUEST:
+            if(map->data[player->coordX][player->coordY - 1].isWalkable){
+                player->coordY -= 1;
+            } else {
+                printf("You can't move West \n");
+            }
+            break;
+        default:
+            printf("Uknown direction");
+    }
 
-    switch (direction)
-    {
-    case NORD:
-        if (map->data[player->coordX - 1][player->coordY].value != WATER &&
-            map->data[player->coordX - 1][player->coordY].value != WALL &&
-            map->data[player->coordX - 1][player->coordY].value != VOID)
-        {
-            player->coordX -= 1;
-        }
-        else
-        {
-            printf("You can't move North \n");
-        }
-        break;
-    case SUD:
-        if (map->data[player->coordX + 1][player->coordY].value != WATER &&
-            map->data[player->coordX + 1][player->coordY].value != WALL &&
-            map->data[player->coordX + 1][player->coordY].value != VOID)
-        {
-            player->coordX += 1;
-        }
-        else
-        {
-            printf("You can't move South \n");
-        }
-        break;
-    case EST:
-        if (map->data[player->coordX][player->coordY + 1].value != WATER &&
-            map->data[player->coordX][player->coordY + 1].value != WALL &&
-            map->data[player->coordX][player->coordY + 1].value != VOID)
-        {
-            player->coordY += 1;
-        }
-        else
-        {
-            printf("You can't move East \n");
-        }
-        break;
-    case OUEST:
-        if (map->data[player->coordX][player->coordY - 1].value != WATER &&
-            map->data[player->coordX][player->coordY - 1].value != WALL &&
-            map->data[player->coordX][player->coordY - 1].value != VOID)
-        {
-            player->coordY -= 1;
-        }
-        else
-        {
-            printf("You can't move West \n");
-        }
-        break;
-    default:
-        printf("Uknown direction");
+    /* Then, we're looking if there is a chest at the players coordinate
+       And we add the item in the chest in the players inventory */
+    if(map->data[player->coordX][player->coordY].value == CHEST){
+        Item *item = generateRandomItem(items);
+        printf("Item in the chest : %s\n", item->name);
+        askPlayerToAddItem(player, item);
+
+        /* We replace the chest block */
+        map->data[player->coordX][player->coordY].value = GRASS;
+
+    }
+
+}
+
+void askPlayerToAddItem(Player *player, Item *item){
+
+    int response = 0;
+    printf("Do you want to add this item to your inventory ?\n");
+    printf("1. Yes\n2. No\nYour choice : ");
+    scanf("%d", &response);
+
+    switch(response){
+        case 1:
+            addItemToInventory(item, player);
+            break;
+        case 2:
+            printf("Item \"%s\" was not added to your inventory\n", item->name);
+            break;
+        default:
+            printf("Uknown character, bye bye your chest !\n");
     }
 }
 

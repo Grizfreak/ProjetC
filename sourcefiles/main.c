@@ -1,10 +1,14 @@
 #include "../headers/map.h"
+#include "../headers/item.h"
 #include "../headers/utils.h"
+
+Item **items;
 
 int main(int argc, char *argv[])
 {
     Map *map = (Map *)malloc(sizeof(Map));
     Player *player = (Player *)malloc(sizeof(Player));
+    items = initItems();
 
     initPlayer(player);
 
@@ -16,6 +20,28 @@ int main(int argc, char *argv[])
     if (result == 1)
     {
         result = newGame();
+        while (isPlayerAlive(player, map))
+        {
+            switch (displayMovementMenu())
+            {
+            case 'z':
+                move(player, NORD, map, items);
+                break;
+            case 's':
+                move(player, SUD, map, items);
+                break;
+            case 'd':
+                move(player, EST, map, items);
+                break;
+            case 'q':
+                move(player, OUEST, map, items);
+                break;
+            default:
+                break;
+            };
+            displayMapWithPlayer(map, player);
+            displayPlayerInventory(player);
+        }
         freeMap(map);
     }
     else if (result == 2)
@@ -28,6 +54,7 @@ int main(int argc, char *argv[])
         saveFile(map);
         freeMap(map);
     }
+    freeItems(items);
     free(map);
     free(player);
     return 0;
