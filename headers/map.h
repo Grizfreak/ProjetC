@@ -38,6 +38,7 @@ void generateMap(Map *map, int width, int height);
 void freeMap(Map *map);
 
 /* Method wich enable the player to move in the direction passed as parameter */
-void move(Player *player, int direction, Map *map);
+void move(Player *player, int direction, Map *map, Item **items);
 void generatePlayerCoordinates(Player *player, Map *map);
 int isPlayerAlive(Player *player, Map *map);
+void askPlayerToAddItem(Player *player, Item *item);
