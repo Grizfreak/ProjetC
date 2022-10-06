@@ -36,6 +36,9 @@ int main(int argc, char *argv[])
             case 'q':
                 move(player, OUEST, map, items);
                 break;
+            case 'i':
+                use(player);
+                break;
             default:
                 break;
             };

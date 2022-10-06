@@ -38,7 +38,7 @@ void attack(Player *player, Mob *mob);
 void defend(Player *player, Mob *mob);
 
 /* Method which enable the player to heal himself */
-void use(Player *player, Item *item);
+void use(Player *player);
 
 /* Method which enable the player to destoy the object next to the player */
 void destroy(Player player);
