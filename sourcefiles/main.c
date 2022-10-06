@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
 
         while (isPlayerAlive(player, map))
         {
-            switch (displayMovementMenu())
+            switch (displayActionsMenu())
             {
             case 'z':
                 moveResult = move(player, NORD, map, items);
@@ -42,6 +42,10 @@ int main(int argc, char *argv[])
                 break;
             case 'q':
                 moveResult = move(player, OUEST, map, items);
+                break;
+            case 'i':
+                displayPlayerInventory(player);
+                use(player);
                 break;
             default:
                 break;

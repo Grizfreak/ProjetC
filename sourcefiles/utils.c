@@ -37,7 +37,7 @@ int newGame()
     return 0;
 }
 
-char displayMovementMenu()
+char displayActionsMenu()
 {
     char choice;
     char rtn;
@@ -47,12 +47,14 @@ char displayMovementMenu()
         printf("Go South by pressing 's' \n");
         printf("Go East by pressing 'd' \n");
         printf("Go West by pressing 'q' \n");
+        printf("Use an item by pressing 'i' \n");
+
         printf("Your choice: ");
         clearBuffer();
         rtn = scanf("%c", &choice);
-        if (rtn != 'z' && rtn != 's' && rtn != 'd' && rtn != 'q')
+        if (rtn != 'z' && rtn != 's' && rtn != 'd' && rtn != 'q' && rtn != 'i')
         {
-            if (choice == 'z' || choice == 's' || choice == 'd' || choice == 'q')
+            if (choice == 'z' || choice == 's' || choice == 'd' || choice == 'q' || choice == 'i')
             {
                 return choice;
             }

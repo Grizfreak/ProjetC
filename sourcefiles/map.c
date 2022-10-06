@@ -95,7 +95,7 @@ void displayMapWithoutBars(Map *map)
                 printf("\033[91m≈ \033[0m");
                 break;
             case PLAYER:
-                printf("🐈");
+                printf("🦄");
                 break;
             case MOB:
                 printf("👾");

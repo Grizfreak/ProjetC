@@ -11,6 +11,7 @@ void initPlayer(Player *player)
     player->XpUntilLeveling = 25;
     player->isDead = 0;
 
+    /* We initialize player's inventory as NULL for every slot */
     for(int j = 0; j < 10; j++){
         player->inventory[j] = NULL;
     }
@@ -39,32 +40,52 @@ void attackPlayer(Mob *mob, Player *player)
 }
 
 /* Method which enable the player to heal himself */
-void use(Player *player, Item *item){
+void use(Player *player){
 
-    /* DON'T FORGET TO PUT NULL AT THE INDEX OF THE ITEM */
+    int slot = -1;
+    printf("What item would you like to use ? Enter a slot or press 0 to quitt : ");
+    scanf("%d", &slot);
+
+    if(slot == 0){
+        return;
+    }
+
+    while(slot < 1 || slot > 10 || player->inventory[slot - 1] == NULL){
+        printf("You don't have an item on slot %d\n", slot);
+        printf("What item would you like to use ? Enter slot or press 0 to quitt : ");
+        scanf("%d", &slot);
+
+        if(slot == 0){
+            return;
+        }
+    }
+
+    Item *item = player->inventory[slot - 1];
+
+    /* We remove the item from the player inventory */
+    player->inventory[slot - 1] = NULL;
 
     switch(item->effect){
         case HEAL:
             player->pv += item->multiplier;
-            printf("You just use item %s to heal yourself\n", item->name);
+            printf("You just use item %s to heal yourself by %.0lf pv\n", item->name, item->multiplier);
             break;
         case ATQ_BOOST:
-            player->attack *= (item->multiplier / 100);
-            printf("You just use item %s to boost your attack\n", item->name);
+            player->attack += player->attack * (item->multiplier / 100);
+            printf("You just use item %s to boost your attack by %.0lf%%\n", item->name, item->multiplier);
             break;
         case BOAT:
             player->state = CAN_MOVE_ON_WATER;
             printf("You can now navigate on water\n");
             break;
+        case WALL:
+            printf("Not implemented yet.\n");
+            break;
         default:
             printf("You tried to use an uknown item\n");
             break;
     }
-}
 
-/* Method which enable the player to destoy the object next to the player */
-void destroy(Player player)
-{
 }
 
 /* Method which add an item to the players inventory */

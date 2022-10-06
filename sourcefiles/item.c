@@ -1,19 +1,20 @@
 #include "../headers/item.h"
 #include <time.h>
 
-/* Method which generate a random item */
-Item * generateRandomItem(Item **items){
-
+/* Function that generate a random item among list passed as parameter*/
+Item *generateRandomItem(Item **items)
+{
     int randItem = rand() % TOTAL_NUMBER_OF_ITEMS;
     return items[randItem];
-
 }
 
-Item ** initItems(){
-
+/* Function that initialize the list of items (40 in total) */
+Item **initItems()
+{
+    /* Allow memory to this list of items */
     Item **listOfitems = (Item **)malloc(TOTAL_NUMBER_OF_ITEMS * sizeof(Item));
 
-    /* Heal items */
+    /* Allow memory for Heal items */
     Item *i1 = (Item *)malloc(sizeof(Item));
     i1->name = "Amulet of the Drunkard";
     i1->effect = HEAL;
@@ -22,150 +23,150 @@ Item ** initItems(){
     Item *i2 = (Item *)malloc(sizeof(Item));
     i2->name = "Ring of Regeneration";
     i2->effect = HEAL;
-    i2->multiplier = 0;
+    i2->multiplier = 50;
 
     Item *i3 = (Item *)malloc(sizeof(Item));
     i3->name = "Ghost Lantern";
     i3->effect = HEAL;
-    i3->multiplier = 0;
+    i3->multiplier = 5;
 
     Item *i4 = (Item *)malloc(sizeof(Item));
     i4->name = "Rod of Resurrection";
     i4->effect = HEAL;
-    i4->multiplier = 0;
+    i4->multiplier = 65;
 
     Item *i5 = (Item *)malloc(sizeof(Item));
     i5->name = "Staff of Healing";
     i5->effect = HEAL;
-    i5->multiplier = 0;
+    i5->multiplier = 40;
 
     Item *i6 = (Item *)malloc(sizeof(Item));
     i6->name = "Potion of Healing";
     i6->effect = HEAL;
-    i6->multiplier = 0;
+    i6->multiplier = 20;
 
     Item *i7 = (Item *)malloc(sizeof(Item));
     i7->name = "Icon of Ravenloft";
     i7->effect = HEAL;
-    i7->multiplier = 0;
-    
+    i7->multiplier = 5;
+
     Item *i8 = (Item *)malloc(sizeof(Item));
     i8->name = "Ioun Stone of Vitality";
     i8->effect = HEAL;
-    i8->multiplier = 0;
+    i8->multiplier = 10;
 
     Item *i9 = (Item *)malloc(sizeof(Item));
     i9->name = "Restorative Ointment";
     i9->effect = HEAL;
-    i9->multiplier = 0;
+    i9->multiplier = 25;
 
     Item *i10 = (Item *)malloc(sizeof(Item));
     i10->name = "Necklace of Prayer Beads";
     i10->effect = HEAL;
-    i10->multiplier = 0;
+    i10->multiplier = 40;
 
     Item *i11 = (Item *)malloc(sizeof(Item));
     i11->name = "Amulet of Health";
     i11->effect = HEAL;
-    i11->multiplier = 0;
+    i11->multiplier = 80;
 
     Item *i12 = (Item *)malloc(sizeof(Item));
     i12->name = "Eversmoking Bottle";
     i12->effect = HEAL;
-    i12->multiplier = 0;
+    i12->multiplier = 2;
 
     Item *i13 = (Item *)malloc(sizeof(Item));
     i13->name = "Lantern Of Revealing";
     i13->effect = HEAL;
-    i13->multiplier = 0;
+    i13->multiplier = 10;
 
     Item *i14 = (Item *)malloc(sizeof(Item));
     i14->name = "Mummy Rot Antidote";
     i14->effect = HEAL;
-    i14->multiplier = 0;
+    i14->multiplier = 60;
 
     Item *i15 = (Item *)malloc(sizeof(Item));
     i15->name = "Thessaltoxin Antidote";
     i15->effect = HEAL;
-    i15->multiplier = 0;
+    i15->multiplier = 30;
 
-    // /* Attack boost items */
+    /* Allow memory for Attack boost items */
     Item *i16 = (Item *)malloc(sizeof(Item));
     i16->name = "Javelin Of Lightning";
     i16->effect = ATQ_BOOST;
-    i16->multiplier = 0;
+    i16->multiplier = 20;
 
     Item *i17 = (Item *)malloc(sizeof(Item));
     i17->name = "Flame Tongue";
     i17->effect = ATQ_BOOST;
-    i17->multiplier = 0;
+    i17->multiplier = 30;
 
     Item *i18 = (Item *)malloc(sizeof(Item));
     i18->name = "Nine Lives Stealer";
     i18->effect = ATQ_BOOST;
-    i18->multiplier = 0;
+    i18->multiplier = 40;
 
     Item *i19 = (Item *)malloc(sizeof(Item));
     i19->name = "Vorpal Sword";
     i19->effect = ATQ_BOOST;
-    i19->multiplier = 0;
+    i19->multiplier = 10;
 
     Item *i20 = (Item *)malloc(sizeof(Item));
     i20->name = "Glamerweave";
     i20->effect = ATQ_BOOST;
-    i20->multiplier = 0;
+    i20->multiplier = 20;
 
     Item *i21 = (Item *)malloc(sizeof(Item));
     i21->name = "Wand Of Magic Missiles";
     i21->effect = ATQ_BOOST;
-    i21->multiplier = 0;
+    i21->multiplier = 40;
 
     Item *i22 = (Item *)malloc(sizeof(Item));
     i22->name = "Winged Boots";
     i22->effect = ATQ_BOOST;
-    i22->multiplier = 0;
+    i22->multiplier = 5;
 
     Item *i23 = (Item *)malloc(sizeof(Item));
     i23->name = "Bracers Of Archery";
     i23->effect = ATQ_BOOST;
-    i23->multiplier = 0;
+    i23->multiplier = 10;
 
     Item *i24 = (Item *)malloc(sizeof(Item));
     i24->name = "Eldritch Claw Tattoo";
     i24->effect = ATQ_BOOST;
-    i24->multiplier = 0;
+    i24->multiplier = 60;
 
     Item *i25 = (Item *)malloc(sizeof(Item));
     i25->name = "A Stone Of Good Luck";
     i25->effect = ATQ_BOOST;
-    i25->multiplier = 0;
+    i25->multiplier = 100;
 
     Item *i26 = (Item *)malloc(sizeof(Item));
     i26->name = "Potion of Giant Strength";
     i26->effect = ATQ_BOOST;
-    i26->multiplier = 0;
+    i26->multiplier = 150;
 
     Item *i27 = (Item *)malloc(sizeof(Item));
     i27->name = "Blood Spear";
     i27->effect = ATQ_BOOST;
-    i27->multiplier = 0;
+    i27->multiplier = 90;
 
     Item *i28 = (Item *)malloc(sizeof(Item));
     i28->name = "Luck Blade";
     i28->effect = ATQ_BOOST;
-    i28->multiplier = 0;
+    i28->multiplier = 50;
 
     Item *i29 = (Item *)malloc(sizeof(Item));
     i29->name = "Nepenthe";
     i29->effect = ATQ_BOOST;
-    i29->multiplier = 0;
+    i29->multiplier = 10;
 
     Item *i30 = (Item *)malloc(sizeof(Item));
     i30->name = "Dart";
     i30->effect = ATQ_BOOST;
-    i30->multiplier = 0;
+    i30->multiplier = 15;
 
-    // /* Wall items */
+    /* Allow memory for Wall items */
     Item *i31 = (Item *)malloc(sizeof(Item));
     i31->name = "Oak wood wall";
     i31->effect = WALL_ITEM;
@@ -201,7 +202,7 @@ Item ** initItems(){
     i37->effect = WALL_ITEM;
     i37->multiplier = 0;
 
-    // /* Boat items */
+    /* Allow memory fot Boat items */
     Item *i38 = (Item *)malloc(sizeof(Item));
     i38->name = "Raft";
     i38->effect = BOAT;
@@ -217,6 +218,7 @@ Item ** initItems(){
     i40->effect = BOAT;
     i40->multiplier = 0;
 
+    /* Add all items created above to the list of items */
     listOfitems[0] = i1;
     listOfitems[1] = i2;
     listOfitems[2] = i3;
@@ -261,10 +263,14 @@ Item ** initItems(){
     return listOfitems;
 }
 
-void freeItems(Item **items){
+/* Function that free memory by freeing all item inside the list of items */
+void freeItems(Item **items)
+{
+    /* First we free item by item inside the list */
     for (int i = 0; i < TOTAL_NUMBER_OF_ITEMS; i++)
     {
         free(items[i]);
     }
+    /* Then we free the list of items */
     free(items);
 }

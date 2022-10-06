@@ -4,19 +4,20 @@
 #include "mob.h"
 #include "item.h"
 
+/* Const that define all cardinal directions */
 #define NORD 0
 #define SUD 1
 #define EST 2
 #define OUEST 3
 
+/* Const that define all player's state */
 #define DEFAULT 11
 #define IN_FIGHT 12
 #define IS_MOVING_SMTH 13
 #define CAN_MOVE_ON_WATER 14
 
-/* Player structure */
-typedef struct Player
-{
+/* Player struct */
+typedef struct Player {
     char name[32];
     int coordX;
     int coordY;
@@ -37,10 +38,7 @@ void attack(Player *player, Mob *mob);
 void attackPlayer(Mob *mob, Player *player);
 
 /* Method which enable the player to heal himself */
-void use(Player *player, Item *item);
-
-/* Method which enable the player to destoy the object next to the player */
-void destroy(Player player);
+void use(Player *player);
 
 /* Method which add an item to the players inventory */
 void addItemToInventory(Item *item, Player *player);
