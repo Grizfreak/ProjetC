@@ -56,23 +56,32 @@ void use(Player *player){
     /* We remove the item from the player inventory */
     player->inventory[slot - 1] = NULL;
 
+    printf("Player attack : %d\n", player->attack);
+    printf("Player health : %d\n", player->pv);
+
     switch(item->effect){
         case HEAL:
             player->pv += item->multiplier;
             printf("You just use item %s to heal yourself by %.0lf pv\n", item->name, item->multiplier);
             break;
         case ATQ_BOOST:
-            player->attack *= (item->multiplier / 100);
+            player->attack += player->attack * (item->multiplier / 100);
             printf("You just use item %s to boost your attack by %.0lf%%\n", item->name, item->multiplier);
             break;
         case BOAT:
             player->state = CAN_MOVE_ON_WATER;
             printf("You can now navigate on water\n");
             break;
+        case WALL:
+            printf("Not implemented yet.\n");
+            break;
         default:
             printf("You tried to use an uknown item\n");
             break;
     }
+
+    printf("Player attack : %d\n", player->attack);
+    printf("Player health : %d\n", player->pv);
 }
 
 /* Method which enable the player to destoy the object next to the player */
