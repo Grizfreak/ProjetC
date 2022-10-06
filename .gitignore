@@ -47,6 +47,7 @@ main
 *.mod*
 *.cmd
 .tmp_versions/
+savedata/
 modules.order
 Module.symvers
 Mkfile.old

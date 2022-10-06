@@ -2,7 +2,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <math.h>
 #include "player.h"
+#include "mob.h"
 
 #define GRASS 0
 #define WATER 1
@@ -16,6 +18,7 @@
 #define CHEST 8
 #define VOID 9
 #define PLAYER 10
+#define MOB 11
 
 typedef struct Block
 {
@@ -32,13 +35,19 @@ typedef struct Map
 } Map;
 
 void displayMap(Map *map);
-void displayMapWithPlayer(Map *map , Player *player);
+void displayMapWithPlayer(Map *map, Player *player, Mob **mobs, int nbMobs);
 void displayMapWithoutBars(Map *map);
 void generateMap(Map *map, int width, int height);
 void freeMap(Map *map);
 
 /* Method wich enable the player to move in the direction passed as parameter */
-void move(Player *player, int direction, Map *map, Item **items);
+int move(Player *player, int direction, Map *map, Item **items);
 void generatePlayerCoordinates(Player *player, Map *map);
 int isPlayerAlive(Player *player, Map *map);
 void askPlayerToAddItem(Player *player, Item *item);
+
+/* Method which enable mob to move in the direction passed as parameter */
+void moveMob(Mob *mob, Map *map, Player *player, Mob **mobs, int nbMobs);
+void generateMobCoordinates(Mob *mob, Map *map);
+void generateMobs(Mob **mobs, int nbMobsMax, Map *map);
+int checkMobAtPosition(Mob *mob, Map *map, int height, int width, Mob **mobs, int nbMobs);
