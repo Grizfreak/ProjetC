@@ -4,17 +4,19 @@
 #include "mob.h"
 #include "item.h"
 
+/* Const that define all cardinal directions */
 #define NORD 0
 #define SUD 1
 #define EST 2
 #define OUEST 3
 
+/* Const that define all player's state */
 #define DEFAULT 11
 #define IN_FIGHT 12
 #define IS_MOVING_SMTH 13
 #define CAN_MOVE_ON_WATER 14
 
-/* Player structure */
+/* Player struct */
 typedef struct Player {
     char name[32];
     int coordX;

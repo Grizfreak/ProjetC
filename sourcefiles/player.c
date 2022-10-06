@@ -10,6 +10,7 @@ void initPlayer(Player *player){
     player->XpUntilLeveling = 25;
     player->isDead = 0;
 
+    /* We initialize player's inventory as NULL for every slot */
     for(int j = 0; j < 10; j++){
         player->inventory[j] = NULL;
     }
@@ -38,7 +39,7 @@ void defend(Player *player, Mob *mob){
 void use(Player *player){
 
     int slot = -1;
-    printf("What item would you use ? Enter a slot or press 0 to quitt : ");
+    printf("What item would you like to use ? Enter a slot or press 0 to quitt : ");
     scanf("%d", &slot);
 
     if(slot == 0){
@@ -47,8 +48,12 @@ void use(Player *player){
 
     while(slot < 1 || slot > 10 || player->inventory[slot - 1] == NULL){
         printf("You don't have an item on slot %d\n", slot);
-        printf("What item would you use ? Enter slot : ");
+        printf("What item would you like to use ? Enter slot or press 0 to quitt : ");
         scanf("%d", &slot);
+
+        if(slot == 0){
+            return;
+        }
     }
 
     Item *item = player->inventory[slot - 1];
