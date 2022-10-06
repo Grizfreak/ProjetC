@@ -40,9 +40,6 @@ void defend(Player *player, Mob *mob);
 /* Method which enable the player to heal himself */
 void use(Player *player);
 
-/* Method which enable the player to destoy the object next to the player */
-void destroy(Player player);
-
 /* Method which add an item to the players inventory */
 void addItemToInventory(Item *item, Player *player);
 

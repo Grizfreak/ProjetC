@@ -56,9 +56,6 @@ void use(Player *player){
     /* We remove the item from the player inventory */
     player->inventory[slot - 1] = NULL;
 
-    printf("Player attack : %d\n", player->attack);
-    printf("Player health : %d\n", player->pv);
-
     switch(item->effect){
         case HEAL:
             player->pv += item->multiplier;
@@ -79,13 +76,6 @@ void use(Player *player){
             printf("You tried to use an uknown item\n");
             break;
     }
-
-    printf("Player attack : %d\n", player->attack);
-    printf("Player health : %d\n", player->pv);
-}
-
-/* Method which enable the player to destoy the object next to the player */
-void destroy(Player player){
 
 }
 

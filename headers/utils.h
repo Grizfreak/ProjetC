@@ -22,7 +22,7 @@ void loadFile(Map *map);
 
 /* Method which display to the player the movement actions he can do */
 /* He can go through several directions like NORTH, SOUTH, EAST and WEST */
-char displayMovementMenu();
+char displayActionsMenu();
 
 /* Method which display fight menu to the player */
 /* He can attack the monster, defend himself or use an item from his inventory */

@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
         result = newGame();
         while (isPlayerAlive(player, map))
         {
-            switch (displayMovementMenu())
+            switch (displayActionsMenu())
             {
             case 'z':
                 move(player, NORD, map, items);
@@ -37,13 +37,13 @@ int main(int argc, char *argv[])
                 move(player, OUEST, map, items);
                 break;
             case 'i':
+                displayPlayerInventory(player);
                 use(player);
                 break;
             default:
                 break;
             };
             displayMapWithPlayer(map, player);
-            displayPlayerInventory(player);
         }
         freeMap(map);
     }

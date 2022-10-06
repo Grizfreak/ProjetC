@@ -37,7 +37,7 @@ int newGame()
     return 0;
 }
 
-char displayMovementMenu()
+char displayActionsMenu()
 {
     char choice;
     char rtn;

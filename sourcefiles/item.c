@@ -1,19 +1,20 @@
 #include "../headers/item.h"
 #include <time.h>
 
-/* Method which generate a random item */
-Item * generateRandomItem(Item **items){
-
+/* Function that generate a random item among list passed as parameter*/
+Item *generateRandomItem(Item **items)
+{
     int randItem = rand() % TOTAL_NUMBER_OF_ITEMS;
     return items[randItem];
-
 }
 
-Item ** initItems(){
-
+/* Function that initialize the list of items (40 in total) */
+Item **initItems()
+{
+    /* Allow memory to this list of items */
     Item **listOfitems = (Item **)malloc(TOTAL_NUMBER_OF_ITEMS * sizeof(Item));
 
-    /* Heal items */
+    /* Allow memory for Heal items */
     Item *i1 = (Item *)malloc(sizeof(Item));
     i1->name = "Amulet of the Drunkard";
     i1->effect = HEAL;
@@ -48,7 +49,7 @@ Item ** initItems(){
     i7->name = "Icon of Ravenloft";
     i7->effect = HEAL;
     i7->multiplier = 5;
-    
+
     Item *i8 = (Item *)malloc(sizeof(Item));
     i8->name = "Ioun Stone of Vitality";
     i8->effect = HEAL;
@@ -89,7 +90,7 @@ Item ** initItems(){
     i15->effect = HEAL;
     i15->multiplier = 30;
 
-    // /* Attack boost items */
+    /* Allow memory for Attack boost items */
     Item *i16 = (Item *)malloc(sizeof(Item));
     i16->name = "Javelin Of Lightning";
     i16->effect = ATQ_BOOST;
@@ -165,7 +166,7 @@ Item ** initItems(){
     i30->effect = ATQ_BOOST;
     i30->multiplier = 15;
 
-    // /* Wall items */
+    /* Allow memory for Wall items */
     Item *i31 = (Item *)malloc(sizeof(Item));
     i31->name = "Oak wood wall";
     i31->effect = WALL_ITEM;
@@ -201,7 +202,7 @@ Item ** initItems(){
     i37->effect = WALL_ITEM;
     i37->multiplier = 0;
 
-    // /* Boat items */
+    /* Allow memory fot Boat items */
     Item *i38 = (Item *)malloc(sizeof(Item));
     i38->name = "Raft";
     i38->effect = BOAT;
@@ -217,6 +218,7 @@ Item ** initItems(){
     i40->effect = BOAT;
     i40->multiplier = 0;
 
+    /* Add all items created above to the list of items */
     listOfitems[0] = i1;
     listOfitems[1] = i2;
     listOfitems[2] = i3;
@@ -261,10 +263,14 @@ Item ** initItems(){
     return listOfitems;
 }
 
-void freeItems(Item **items){
+/* Function that free memory by freeing all item inside the list of items */
+void freeItems(Item **items)
+{
+    /* First we free item by item inside the list */
     for (int i = 0; i < TOTAL_NUMBER_OF_ITEMS; i++)
     {
         free(items[i]);
     }
+    /* Then we free the list of items */
     free(items);
 }
