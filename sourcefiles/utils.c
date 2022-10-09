@@ -490,13 +490,12 @@ void loadFile(Map *map, Player *player)
         player->inventory[i]->effect = effect;
         player->inventory[i]->multiplier = multiplier;
     }
-    getchar();
     printf("File loaded.\n");
     fclose(file);
     //   printf("Not implemented yet.\n");
 }
 
-int fight(Player *player, Mob *mob)
+int fight(Player *player, Mob *mob, int *nbMobsNotDead)
 {
     int hasFlee = 0;
     int isDefending = 0;
@@ -540,7 +539,7 @@ int fight(Player *player, Mob *mob)
             if (answer == enigma->result)
             {
                 printf("You have successfully attacked the %s.\n", mob->name);
-                attack(player, mob);
+                attack(player, mob, nbMobsNotDead);
                 printf("%d", mob->isDead);
             }
             else

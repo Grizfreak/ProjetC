@@ -37,6 +37,6 @@ char displayActionsMenu();
 /* He can attack the monster, defend himself or use an item from his inventory */
 int displayFightMenu();
 
-int fight(Player *player, Mob *mob);
+int fight(Player *player, Mob *mob, int *nbMobsNotDead);
 
 Enigma *generateEnigma();

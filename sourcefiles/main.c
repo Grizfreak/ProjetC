@@ -11,15 +11,17 @@ int main(int argc, char *argv[])
     items = initItems();
     Mob **mobs;
     int nbMobsMax;
+    int *nbMobsNotDead = (int *)malloc(sizeof(int));
 
     initPlayer(player);
 
     generateMap(map, 20, 20);
     generatePlayerCoordinates(player, map);
     nbMobsMax = (int)(round((2.5 / 100.0) * (map->height * map->width)));
+    *nbMobsNotDead = nbMobsMax;
     mobs = (Mob **)malloc(sizeof(Mob *) * nbMobsMax);
     printf("nbMobsMax = %d\n", nbMobsMax);
-    generateMobs(mobs, nbMobsMax, map);
+    generateMobs(mobs, nbMobsMax, map, player);
     displayMapWithPlayer(map, player, mobs, nbMobsMax);
     int result = displayMenu();
     int moveResult = 2;
@@ -60,7 +62,13 @@ int main(int argc, char *argv[])
                 {
                     if (mobs[i]->coordX == player->coordX && mobs[i]->coordY == player->coordY)
                     {
-                        fight(player, mobs[i]);
+                        fight(player, mobs[i], nbMobsNotDead);
+                        printf("nbMobsNotDead = %d", *nbMobsNotDead);
+                        if (*nbMobsNotDead < 2)
+                        {
+                            generateMobs(mobs, nbMobsMax, map, player);
+                            *nbMobsNotDead = nbMobsMax;
+                        }
                     }
                 }
             }
@@ -80,7 +88,13 @@ int main(int argc, char *argv[])
                 {
                     if (mobs[i]->coordX == player->coordX && mobs[i]->coordY == player->coordY)
                     {
-                        fight(player, mobs[i]);
+                        fight(player, mobs[i], nbMobsNotDead);
+                        printf("nbMobsNotDead = %d", *nbMobsNotDead);
+                        if (*nbMobsNotDead < 2)
+                        {
+                            generateMobs(mobs, nbMobsMax, map, player);
+                            *nbMobsNotDead = nbMobsMax;
+                        }
                     }
                 }
             }
@@ -106,6 +120,7 @@ int main(int argc, char *argv[])
         free(player);
         freeItems(items);
         free(map);
+        free(nbMobsNotDead);
         return 0;
     }
     freeMap(map);
@@ -116,5 +131,6 @@ int main(int argc, char *argv[])
     free(mobs);
     free(player);
     free(map);
+    free(nbMobsNotDead);
     return 0;
 }

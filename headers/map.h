@@ -48,6 +48,5 @@ void askPlayerToAddItem(Player *player, Item *item);
 
 /* Method which enable mob to move in the direction passed as parameter */
 void moveMob(Mob *mob, Map *map, Player *player, Mob **mobs, int nbMobs);
-void generateMobCoordinates(Mob *mob, Map *map);
-void generateMobs(Mob **mobs, int nbMobsMax, Map *map);
+void generateMobs(Mob **mobs, int nbMobsMax, Map *map, Player *player);
 int checkMobAtPosition(Mob *mob, Map *map, int height, int width, Mob **mobs, int nbMobs);

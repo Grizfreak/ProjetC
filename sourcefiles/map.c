@@ -662,7 +662,7 @@ int isPlayerAlive(Player *player, Map *map)
     return 1;
 }
 
-void generateMobs(Mob **mobs, int nbMobsMax, Map *map)
+void generateMobs(Mob **mobs, int nbMobsMax, Map *map, Player *player)
 {
     for (int i = 0; i < nbMobsMax; i++)
     {
@@ -671,14 +671,17 @@ void generateMobs(Mob **mobs, int nbMobsMax, Map *map)
         mobs[i]->coordX = 1 + (rand() % (map->width - 1));
         mobs[i]->coordY = 1 + (rand() % (map->height - 1));
         printf("Mob %d : CoordX : %d, CoordY : %d\n", i, mobs[i]->coordX, mobs[i]->coordY);
-        while (map->data[mobs[i]->coordX][mobs[i]->coordY].value == WATER ||
-               map->data[mobs[i]->coordX][mobs[i]->coordY].value == LAVA ||
-               map->data[mobs[i]->coordX][mobs[i]->coordY].value == NENUPHAR ||
-               map->data[mobs[i]->coordX][mobs[i]->coordY].value == VOID ||
-               map->data[mobs[i]->coordX][mobs[i]->coordY].value == CHEST)
+        for (int j = 0; j < i; j++)
         {
-            mobs[i]->coordX = 1 + (rand() % (map->height - 1));
-            mobs[i]->coordY = 1 + (rand() % (map->width - 1));
+            while (map->data[mobs[i]->coordX][mobs[i]->coordY].value == WATER ||
+                   map->data[mobs[i]->coordX][mobs[i]->coordY].value == LAVA ||
+                   map->data[mobs[i]->coordX][mobs[i]->coordY].value == NENUPHAR ||
+                   map->data[mobs[i]->coordX][mobs[i]->coordY].value == VOID ||
+                   map->data[mobs[i]->coordX][mobs[i]->coordY].value == CHEST || (mobs[i]->coordX == player->coordX && mobs[i]->coordY == player->coordY) || (mobs[i]->coordX == mobs[j]->coordX && mobs[i]->coordY == mobs[j]->coordY))
+            {
+                mobs[i]->coordX = 1 + (rand() % (map->height - 1));
+                mobs[i]->coordY = 1 + (rand() % (map->width - 1));
+            }
         }
         printf("Mob %d : CoordX : %d, CoordY : %d\n", i, mobs[i]->coordX, mobs[i]->coordY);
     }
