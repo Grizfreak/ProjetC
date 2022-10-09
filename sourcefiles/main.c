@@ -47,6 +47,9 @@ int main(int argc, char *argv[])
                 displayPlayerInventory(player);
                 use(player);
                 break;
+            case 'e':
+                saveFile(map, player);
+                break;
             default:
                 break;
             };
@@ -87,11 +90,13 @@ int main(int argc, char *argv[])
     }
     else if (result == 2)
     {
-        loadFile(map);
+        loadFile(map, player);
+        displayMapWithPlayer(map, player, mobs, nbMobsMax);
+        displayPlayerInventory(player);
     }
     else if (result == 3)
     {
-        saveFile(map);
+        saveFile(map, player);
         freeMap(map);
         for (int i = 0; i < nbMobsMax; i++)
         {

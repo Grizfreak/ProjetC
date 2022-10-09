@@ -48,13 +48,14 @@ char displayActionsMenu()
         printf("Go East by pressing 'd' \n");
         printf("Go West by pressing 'q' \n");
         printf("Use an item by pressing 'i' \n");
+        printf("Save the game by pressing 'e' \n");
 
         printf("Your choice: ");
         clearBuffer();
         rtn = scanf("%c", &choice);
-        if (rtn != 'z' && rtn != 's' && rtn != 'd' && rtn != 'q' && rtn != 'i')
+        if (rtn != 'z' && rtn != 's' && rtn != 'd' && rtn != 'q' && rtn != 'i' && rtn != 'e')
         {
-            if (choice == 'z' || choice == 's' || choice == 'd' || choice == 'q' || choice == 'i')
+            if (choice == 'z' || choice == 's' || choice == 'd' || choice == 'q' || choice == 'i' || choice == 'e')
             {
                 return choice;
             }
@@ -85,10 +86,15 @@ void clearBuffer()
         c = getchar();
 }
 
-void saveFile(Map *map)
+void saveFile(Map *map, Player *player)
 {
     FILE *file;
     int fileNumber = 0;
+    struct stat st = {0};
+    if (stat("./savedata", &st) == -1)
+    {
+        mkdir("./savedata", 0700);
+    }
     printf("Please choose your save file emplacement: \n");
     if ((file = fopen("savedata/save1.dat", "rb")) == NULL)
     {
@@ -192,11 +198,101 @@ void saveFile(Map *map)
             }
         }
     }
+
+    // save player
+    if (fwrite(&player->coordX, sizeof(int), 1, file) != 1)
+    {
+        printf("Error while writing player x in file.\n");
+        return;
+    }
+    if (fwrite(&player->coordY, sizeof(int), 1, file) != 1)
+    {
+        printf("Error while writing player y in file.\n");
+        return;
+    }
+    if (fwrite(&player->pv, sizeof(int), 1, file) != 1)
+    {
+        printf("Error while writing player health in file.\n");
+        return;
+    }
+    if (fwrite(&player->attack, sizeof(int), 1, file) != 1)
+    {
+        printf("Error while writing player attack in file.\n");
+        return;
+    }
+    if (fwrite(&player->currentXp, sizeof(int), 1, file) != 1)
+    {
+        printf("Error while writing player defense in file.\n");
+        return;
+    }
+    if (fwrite(&player->XpUntilLeveling, sizeof(int), 1, file) != 1)
+    {
+        printf("Error while writing player level in file.\n");
+        return;
+    }
+    if (fwrite(&player->state, sizeof(int), 1, file) != 1)
+    {
+        printf("Error while writing player level in file.\n");
+        return;
+    }
+    if (fwrite(&player->isDead, sizeof(int), 1, file) != 1)
+    {
+        printf("Error while writing player level in file.\n");
+        return;
+    }
+
+    // save inventory
+    // count number of items
+    int nbItems = 0;
+    for (int i = 0; i < 10; i++)
+    {
+        if (player->inventory[i] != NULL)
+        {
+            nbItems++;
+        }
+    }
+    if (fwrite(&nbItems, sizeof(int), 1, file) != 1)
+    {
+        printf("Error while writing number of items in file.\n");
+        return;
+    }
+    for (int i = 0; i < 10; i++)
+    {
+        if (player->inventory[i] != NULL)
+        {
+            if (fwrite(&player->inventory[i]->effect, sizeof(int), 1, file) != 1)
+            {
+                printf("Error while writing inventory in file.\n");
+                return;
+            }
+            if (fwrite(&player->inventory[i]->multiplier, sizeof(float), 1, file) != 1)
+            {
+                printf("Error while writing inventory in file.\n");
+                return;
+            }
+            int size = strlen(player->inventory[i]->name);
+            if (fwrite(&size, sizeof(int), 1, file) != 1)
+            {
+                printf("Error while writing inventory in file.\n");
+                return;
+            }
+            for (int j = 0; j < size; j++)
+            {
+                if (fwrite(&player->inventory[i]->name[j], sizeof(char), 1, file) != 1)
+                {
+                    printf("Error while writing inventory in file.\n");
+                    return;
+                }
+            }
+        }
+    }
+    // size of inventory
+    printf("nbItems: %d\n", nbItems);
     printf("File saved.\n");
     fclose(file);
 }
 
-void loadFile(Map *map)
+void loadFile(Map *map, Player *player)
 {
     // TODO check if folder exists
     FILE *file;
@@ -308,9 +404,95 @@ void loadFile(Map *map)
         }
     }
     printf("Height : %d, Width : %d\n", map->height, map->width);
+
+    // load player
+    if (fread(&player->coordX, sizeof(int), 1, file) != 1)
+    {
+        printf("Error while reading player x from file.\n");
+        return;
+    }
+    if (fread(&player->coordY, sizeof(int), 1, file) != 1)
+    {
+        printf("Error while reading player y from file.\n");
+        return;
+    }
+    if (fread(&player->pv, sizeof(int), 1, file) != 1)
+    {
+        printf("Error while reading player health from file.\n");
+        return;
+    }
+    if (fread(&player->attack, sizeof(int), 1, file) != 1)
+    {
+        printf("Error while reading player attack from file.\n");
+        return;
+    }
+    if (fread(&player->currentXp, sizeof(int), 1, file) != 1)
+    {
+        printf("Error while reading player defense from file.\n");
+        return;
+    }
+    if (fread(&player->XpUntilLeveling, sizeof(int), 1, file) != 1)
+    {
+        printf("Error while reading player level from file.\n");
+        return;
+    }
+    if (fread(&player->state, sizeof(int), 1, file) != 1)
+    {
+        printf("Error while reading player level from file.\n");
+        return;
+    }
+    if (fread(&player->isDead, sizeof(int), 1, file) != 1)
+    {
+        printf("Error while reading player level from file.\n");
+        return;
+    }
+    // load inventory
+    int nbItemsSaved = 0;
+    if (fread(&nbItemsSaved, sizeof(int), 1, file) != 1)
+    {
+        printf("Error while reading inventory from file.\n");
+        return;
+    }
+    printf("nbItemsSaved: %d\n", nbItemsSaved);
+    for (int i = 0; i < nbItemsSaved; i++)
+    {
+        int effect = 0;
+        float multiplier = 0.0f;
+        int size = 0;
+        if (fread(&effect, sizeof(int), 1, file) != 1)
+        {
+            printf("Error while reading inventory from file.\n");
+            return;
+        }
+        if (fread(&multiplier, sizeof(float), 1, file) != 1)
+        {
+            printf("Error while reading inventory from file.\n");
+            return;
+        }
+        if (fread(&size, sizeof(int), 1, file) != 1)
+        {
+            printf("Error while reading inventory from file.\n");
+            return;
+        }
+        printf("Effect : %d, Multiplier : %f, Size : %d\n", effect, multiplier, size);
+        char *name = (char *)malloc(size * sizeof(char));
+        for (int j = 0; j < size; j++)
+        {
+            if (fread(&name[j], sizeof(char), 1, file) != 1)
+            {
+                printf("Error while reading inventory from file.\n");
+                return;
+            }
+        }
+        printf("Name : %s\n", name);
+        player->inventory[i] = (Item *)malloc(sizeof(Item));
+        player->inventory[i]->name = name;
+        player->inventory[i]->effect = effect;
+        player->inventory[i]->multiplier = multiplier;
+    }
+    getchar();
     printf("File loaded.\n");
     fclose(file);
-    displayMapWithoutBars(map);
     //   printf("Not implemented yet.\n");
 }
 
