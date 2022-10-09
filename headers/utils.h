@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include "../headers/map.h"
+#include <sys/types.h>
+#include <sys/stat.h>
 
 typedef struct Enigma
 {
@@ -22,10 +24,10 @@ int newGame();
 void clearBuffer();
 
 /* Method which save the map in a file */
-void saveFile(Map *map);
+void saveFile(Map *map, Player *player);
 
 /* Method which load the map saved in the file */
-void loadFile(Map *map);
+void loadFile(Map *map, Player *player);
 
 /* Method which display to the player the movement actions he can do */
 /* He can go through several directions like NORTH, SOUTH, EAST and WEST */
@@ -35,6 +37,6 @@ char displayActionsMenu();
 /* He can attack the monster, defend himself or use an item from his inventory */
 int displayFightMenu();
 
-int fight(Player *player, Mob *mob);
+int fight(Player *player, Mob *mob, int *nbMobsNotDead);
 
 Enigma *generateEnigma();

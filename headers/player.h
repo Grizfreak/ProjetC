@@ -17,7 +17,8 @@
 #define CAN_MOVE_ON_WATER 14
 
 /* Player struct */
-typedef struct Player {
+typedef struct Player
+{
     char name[32];
     int coordX;
     int coordY;
@@ -27,14 +28,14 @@ typedef struct Player {
     int XpUntilLeveling;
     int state;
     int isDead;
-    Item * inventory[10];
+    Item *inventory[10];
 } Player;
 
 /* Method which init the player with default state and default param */
 void initPlayer(Player *player);
 
 /* Method which allow the player to attack a mob */
-void attack(Player *player, Mob *mob);
+void attack(Player *player, Mob *mob,int *nbMobsNotDead);
 void attackPlayer(Mob *mob, Player *player);
 
 /* Method which enable the player to heal himself */
