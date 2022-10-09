@@ -621,7 +621,6 @@ int fight(Player *player, Mob *mob, int *nbMobsNotDead)
         printf("You have killed the %s.\n", mob->name);
         printf("Press any key to continue.\n");
         getchar();
-        clearBuffer();
     }
     else if (player->isDead == 1)
     {
@@ -634,7 +633,7 @@ int fight(Player *player, Mob *mob, int *nbMobsNotDead)
         printf("You have successfully fled from the %s.\n", mob->name);
         printf("Press any key to continue.\n");
         getchar();
-        clearBuffer();
+        return 2;
     }
     return 0;
 }

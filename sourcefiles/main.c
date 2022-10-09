@@ -25,6 +25,8 @@ int main(int argc, char *argv[])
     displayMapWithPlayer(map, player, mobs, nbMobsMax);
     int result = displayMenu();
     int moveResult = 2;
+    int previousfightResult = 0;
+    int fightresult = 0;
     if (result == 1)
     {
         result = newGame();
@@ -62,7 +64,8 @@ int main(int argc, char *argv[])
                 {
                     if (mobs[i]->coordX == player->coordX && mobs[i]->coordY == player->coordY)
                     {
-                        fight(player, mobs[i], nbMobsNotDead);
+
+                        fightresult = fight(player, mobs[i], nbMobsNotDead);
                         printf("nbMobsNotDead = %d", *nbMobsNotDead);
                         if (*nbMobsNotDead < 2)
                         {
@@ -72,8 +75,7 @@ int main(int argc, char *argv[])
                     }
                 }
             }
-
-            if (moveResult == 0)
+            if (moveResult == 0 && fightresult != 2)
             {
                 // move all mobs
                 for (int i = 0; i < nbMobsMax; i++)
@@ -82,24 +84,35 @@ int main(int argc, char *argv[])
                 }
             }
             // If mob is on the player's position
-            for (int i = 0; i < nbMobsMax; i++)
+            if (fightresult != 2)
             {
-                if (mobs[i]->isDead == 0)
+                for (int i = 0; i < nbMobsMax; i++)
                 {
-                    if (mobs[i]->coordX == player->coordX && mobs[i]->coordY == player->coordY)
+                    if (mobs[i]->isDead == 0)
                     {
-                        fight(player, mobs[i], nbMobsNotDead);
-                        printf("nbMobsNotDead = %d", *nbMobsNotDead);
-                        if (*nbMobsNotDead < 2)
+                        if (mobs[i]->coordX == player->coordX && mobs[i]->coordY == player->coordY)
                         {
-                            generateMobs(mobs, nbMobsMax, map, player);
-                            *nbMobsNotDead = nbMobsMax;
+                            fightresult = fight(player, mobs[i], nbMobsNotDead);
+                            printf("nbMobsNotDead = %d", *nbMobsNotDead);
+                            if (*nbMobsNotDead < 2)
+                            {
+                                generateMobs(mobs, nbMobsMax, map, player);
+                                *nbMobsNotDead = nbMobsMax;
+                            }
                         }
                     }
                 }
             }
             displayMapWithPlayer(map, player, mobs, nbMobsMax);
             displayPlayerInventory(player);
+            if (fightresult == 2 && previousfightResult == 2)
+            {
+                fightresult = 0;
+            }
+            else
+            {
+                previousfightResult = fightresult;
+            }
         }
     }
     else if (result == 2)
