@@ -667,7 +667,9 @@ void generateMobs(Mob **mobs, int nbMobsMax, Map *map, Player *player)
     for (int i = 0; i < nbMobsMax; i++)
     {
         mobs[i] = malloc(sizeof(Mob));
-        mobs[i]->pv = 10;
+        mobs[i]->pv = rand() % 100;
+        mobs[i]->name = generateRandomMob();
+        mobs[i]->attack = rand() % 50;
         mobs[i]->coordX = 1 + (rand() % (map->width - 1));
         mobs[i]->coordY = 1 + (rand() % (map->height - 1));
         printf("Mob %d : CoordX : %d, CoordY : %d\n", i, mobs[i]->coordX, mobs[i]->coordY);

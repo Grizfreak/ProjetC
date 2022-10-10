@@ -22,7 +22,7 @@ void initPlayer(Player *player)
 void attack(Player *player, Mob *mob, int *nbMobsNotDead)
 {
 
-    printf("Player is attacking the mob with %d damages", player->attack);
+    printf("Player is attacking the mob with %d damages\n", player->attack);
     mob->pv -= player->attack;
     if (mob->pv <= 0)
     {
@@ -33,12 +33,13 @@ void attack(Player *player, Mob *mob, int *nbMobsNotDead)
 
 void attackPlayer(Mob *mob, Player *player)
 {
-    printf("Mob is attacking the player with %d damages", mob->attack);
+    printf("The %s is attacking the player with %d damages\n", mob->name, mob->attack);
     player->pv -= mob->attack;
     if (player->pv <= 0)
     {
         player->isDead = 1;
     }
+    printf("You now have %dpv\n", player->pv);
 }
 
 /* Method which enable the player to heal himself */
@@ -76,6 +77,7 @@ void use(Player *player)
     case HEAL:
         player->pv += item->multiplier;
         printf("You just use item %s to heal yourself by %.0lf pv\n", item->name, item->multiplier);
+        printf("You now have %dpv\n", player->pv);
         break;
     case ATQ_BOOST:
         player->attack += player->attack * (item->multiplier / 100);
