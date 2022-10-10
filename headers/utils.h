@@ -5,6 +5,7 @@
 #include "../headers/map.h"
 #include <sys/types.h>
 #include <sys/stat.h>
+#include "../headers/item.h"
 
 typedef struct Enigma
 {
