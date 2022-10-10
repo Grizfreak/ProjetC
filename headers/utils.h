@@ -6,6 +6,8 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
+Item **items;
+
 typedef struct Enigma
 {
     char operand;
@@ -18,7 +20,7 @@ typedef struct Enigma
 int displayMenu();
 
 /* Method which initialize a new game */
-int newGame();
+int newGame(Player *player, Map *map);
 
 /* Method which clear the buffer */
 void clearBuffer();
@@ -40,3 +42,9 @@ int displayFightMenu();
 int fight(Player *player, Mob *mob, int *nbMobsNotDead);
 
 Enigma *generateEnigma();
+
+int launchgame();
+
+void freeEverything(Map *map, Player *player, Mob **mobs, int nbMobsMax, int *nbMobsNotDead);
+
+void openPlayerMenu(Player *player, Map *map);
