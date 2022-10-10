@@ -710,7 +710,7 @@ int launchgame()
                 moveResult = move(player, OUEST, map, items);
                 break;
             case 'b':
-
+                openPlayerMenu(player, map);
                 break;
             default:
                 break;
@@ -808,4 +808,32 @@ void freeEverything(Map *map, Player *player, Mob **mobs, int nbMobsMax, int *nb
 
 void openPlayerMenu(Player *player, Map *map)
 {
+    char choice;
+    char rtn;
+    while (1)
+    {
+        system("clear");
+        displayPlayerInventory(player);
+        printf("Use an item by pressing 'u'\n");
+        printf("Press 'r' to return to the game\n");
+
+        printf("Your choice: ");
+        clearBuffer();
+        rtn = scanf("%c", &choice);
+        if (rtn == 1)
+        {
+            switch (choice)
+            {
+            case 'u':
+                use(player, map);
+                break;
+            case 'r':
+                return;
+                break;
+            default:
+                printf("Invalid choice\n");
+                break;
+            }
+        }
+    }
 }
