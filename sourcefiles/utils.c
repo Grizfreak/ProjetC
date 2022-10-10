@@ -89,7 +89,7 @@ void clearBuffer()
         c = getchar();
 }
 
-void saveFile(Map *map, Player *player)
+void saveFile(Map *map, Player *player, Mob **mobs, int nbMobsMax, int *nbMobsNotDead)
 {
     FILE *file;
     int fileNumber = 0;
@@ -293,6 +293,14 @@ void saveFile(Map *map, Player *player)
     printf("nbItems: %d\n", nbItems);
     printf("File saved.\n");
     fclose(file);
+    printf("Do you want to quit ? (y/n)\n");
+    char quit;
+    scanf("%c", &quit);
+    if (quit == 'y')
+    {
+        freeEverything(map, player, mobs, nbMobsMax, nbMobsNotDead);
+        exit(0);
+    }
 }
 
 void loadFile(Map *map, Player *player)
@@ -691,7 +699,8 @@ int launchgame()
         *nbMobsNotDead = nbMobsMax;
         mobs = (Mob **)malloc(sizeof(Mob *) * nbMobsMax);
         generateMobs(mobs, nbMobsMax, map, player);
-        displayMapWithPlayer(map, player, mobs, nbMobsMax);
+        system("clear");
+        displayMap5x5(map, player, mobs, nbMobsMax);
 
         while (isPlayerAlive(player, map))
         {
@@ -710,7 +719,7 @@ int launchgame()
                 moveResult = move(player, OUEST, map, items);
                 break;
             case 'b':
-                openPlayerMenu(player, map);
+                openPlayerMenu(player, map, mobs, nbMobsMax, nbMobsNotDead);
                 break;
             default:
                 break;
@@ -761,7 +770,8 @@ int launchgame()
                     }
                 }
             }
-            displayMapWithPlayer(map, player, mobs, nbMobsMax);
+            system("clear");
+            displayMap5x5(map, player, mobs, nbMobsMax);
             displayPlayerInventory(player);
             if (fightresult == 2 && previousfightResult == 2)
             {
@@ -780,7 +790,8 @@ int launchgame()
         *nbMobsNotDead = nbMobsMax;
         mobs = (Mob **)malloc(sizeof(Mob *) * nbMobsMax);
         generateMobs(mobs, nbMobsMax, map, player);
-        displayMapWithPlayer(map, player, mobs, nbMobsMax);
+        system("clear");
+        displayMap5x5(map, player, mobs, nbMobsMax);
         displayPlayerInventory(player);
     }
     else if (result == 3)
@@ -806,15 +817,20 @@ void freeEverything(Map *map, Player *player, Mob **mobs, int nbMobsMax, int *nb
     free(nbMobsNotDead);
 }
 
-void openPlayerMenu(Player *player, Map *map)
+void openPlayerMenu(Player *player, Map *map, Mob **mobs, int nbMobsMax, int *nbMobsNotDead)
 {
     char choice;
     char rtn;
     while (1)
     {
         system("clear");
+        printf("=====================================\n");
         displayPlayerInventory(player);
+        printf("=====================================\n");
+        displayMapVisited(map, player);
+        printf("=====================================\n");
         printf("Use an item by pressing 'u'\n");
+        printf("Press 's' to save the game\n");
         printf("Press 'r' to return to the game\n");
 
         printf("Your choice: ");
@@ -826,6 +842,9 @@ void openPlayerMenu(Player *player, Map *map)
             {
             case 'u':
                 use(player, map);
+                break;
+            case 's':
+                saveFile(map, player, mobs, nbMobsMax, nbMobsNotDead);
                 break;
             case 'r':
                 return;
