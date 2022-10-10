@@ -25,7 +25,7 @@ int newGame(Player *player, Map *map);
 void clearBuffer();
 
 /* Method which save the map in a file */
-void saveFile(Map *map, Player *player);
+void saveFile(Map *map, Player *player, Mob **mobs, int nbMobsMax, int *nbMobsNotDead);
 
 /* Method which load the map saved in the file */
 void loadFile(Map *map, Player *player);
@@ -46,4 +46,4 @@ int launchgame();
 
 void freeEverything(Map *map, Player *player, Mob **mobs, int nbMobsMax, int *nbMobsNotDead);
 
-void openPlayerMenu(Player *player, Map *map);
+void openPlayerMenu(Player *player, Map *map, Mob **mobs, int nbMobsMax, int *nbMobsNotDead);

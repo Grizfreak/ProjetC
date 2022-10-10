@@ -37,6 +37,7 @@ typedef struct Map
 void displayMap(Map *map);
 void displayMapWithPlayer(Map *map, Player *player, Mob **mobs, int nbMobs);
 void displayMapWithoutBars(Map *map);
+void displayMap5x5(Map *map, Player *player, Mob **mobs, int nbMobs);
 void generateMap(Map *map, int width, int height);
 void freeMap(Map *map);
 
@@ -52,3 +53,5 @@ void generateMobs(Mob **mobs, int nbMobsMax, Map *map, Player *player);
 int checkMobAtPosition(Mob *mob, Map *map, int height, int width, Mob **mobs, int nbMobs);
 /* Method which enable the player to heal himself */
 void use(Player *player, Map *map);
+
+void displayMapVisited(Map *map, Player *player);
