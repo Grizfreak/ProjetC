@@ -6,8 +6,6 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
-Item **items;
-
 typedef struct Enigma
 {
     char operand;

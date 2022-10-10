@@ -562,7 +562,8 @@ int move(Player *player, int direction, Map *map, Item **items)
     switch (direction)
     {
     case NORD:
-        if (map->data[player->coordX - 1][player->coordY].isWalkable)
+        if (map->data[player->coordX - 1][player->coordY].isWalkable 
+        || (player->state == CAN_MOVE_ON_WATER && map->data[player->coordX - 1][player->coordY].value == WATER))
         {
             player->coordX -= 1;
         }
@@ -573,7 +574,8 @@ int move(Player *player, int direction, Map *map, Item **items)
         }
         break;
     case SUD:
-        if (map->data[player->coordX + 1][player->coordY].isWalkable)
+        if (map->data[player->coordX + 1][player->coordY].isWalkable
+        || (player->state == CAN_MOVE_ON_WATER && map->data[player->coordX + 1][player->coordY].value == WATER))
         {
             player->coordX += 1;
         }
@@ -584,7 +586,8 @@ int move(Player *player, int direction, Map *map, Item **items)
         }
         break;
     case EST:
-        if (map->data[player->coordX][player->coordY + 1].isWalkable)
+        if (map->data[player->coordX][player->coordY + 1].isWalkable
+        || (player->state == CAN_MOVE_ON_WATER && map->data[player->coordX][player->coordY + 1].value == WATER))
         {
             player->coordY += 1;
         }
@@ -595,7 +598,8 @@ int move(Player *player, int direction, Map *map, Item **items)
         }
         break;
     case OUEST:
-        if (map->data[player->coordX][player->coordY - 1].isWalkable)
+        if (map->data[player->coordX][player->coordY - 1].isWalkable 
+        || (player->state == CAN_MOVE_ON_WATER && map->data[player->coordX ][player->coordY - 1].value == WATER))
         {
             player->coordY -= 1;
         }
