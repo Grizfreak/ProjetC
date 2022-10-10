@@ -5,13 +5,13 @@
 /* Struct of the monster */
 typedef struct Mob
 {
-    char name[32];
+    char *name;
     int pv;
     int attack;
     int coordX;
     int coordY;
-    int state;
     int isDead;
 } Mob;
 
 void freeMobs(Mob **mobs, int nbMobs);
+char *generateRandomMob();

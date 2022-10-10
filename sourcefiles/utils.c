@@ -670,6 +670,8 @@ Enigma *generateEnigma()
     return enigma;
 }
 
+Item **items;
+
 int launchgame()
 {
     Map *map = (Map *)malloc(sizeof(Map));
