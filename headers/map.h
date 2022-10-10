@@ -50,3 +50,5 @@ void askPlayerToAddItem(Player *player, Item *item);
 void moveMob(Mob *mob, Map *map, Player *player, Mob **mobs, int nbMobs);
 void generateMobs(Mob **mobs, int nbMobsMax, Map *map, Player *player);
 int checkMobAtPosition(Mob *mob, Map *map, int height, int width, Mob **mobs, int nbMobs);
+/* Method which enable the player to heal himself */
+void use(Player *player, Map *map);

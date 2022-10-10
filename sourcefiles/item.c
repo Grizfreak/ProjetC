@@ -4,7 +4,7 @@
 /* Function that generate a random item among list passed as parameter*/
 Item *generateRandomItem(Item **items)
 {
-    int randItem = rand() % TOTAL_NUMBER_OF_ITEMS;
+    int randItem = 38/*rand() % TOTAL_NUMBER_OF_ITEMS*/;
     return items[randItem];
 }
 

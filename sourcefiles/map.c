@@ -2,7 +2,7 @@
 
 void displayMap(Map *map)
 {
-    system("clear");
+    //system("clear");
     int endofline = 0;
     for (int i = 0; i < map->height; i++)
     {
@@ -56,7 +56,7 @@ void displayMap(Map *map)
 
 void displayMapWithoutBars(Map *map)
 {
-    system("clear");
+    //system("clear");
     int endofline = 0;
     for (int i = 0; i < map->height; i++)
     {
@@ -562,7 +562,8 @@ int move(Player *player, int direction, Map *map, Item **items)
     switch (direction)
     {
     case NORD:
-        if (map->data[player->coordX - 1][player->coordY].isWalkable)
+        if (map->data[player->coordX - 1][player->coordY].isWalkable 
+        || (player->state == CAN_MOVE_ON_WATER && map->data[player->coordX - 1][player->coordY].value == WATER))
         {
             player->coordX -= 1;
         }
@@ -573,7 +574,8 @@ int move(Player *player, int direction, Map *map, Item **items)
         }
         break;
     case SUD:
-        if (map->data[player->coordX + 1][player->coordY].isWalkable)
+        if (map->data[player->coordX + 1][player->coordY].isWalkable
+        || (player->state == CAN_MOVE_ON_WATER && map->data[player->coordX + 1][player->coordY].value == WATER))
         {
             player->coordX += 1;
         }
@@ -584,7 +586,8 @@ int move(Player *player, int direction, Map *map, Item **items)
         }
         break;
     case EST:
-        if (map->data[player->coordX][player->coordY + 1].isWalkable)
+        if (map->data[player->coordX][player->coordY + 1].isWalkable
+        || (player->state == CAN_MOVE_ON_WATER && map->data[player->coordX][player->coordY + 1].value == WATER))
         {
             player->coordY += 1;
         }
@@ -595,7 +598,8 @@ int move(Player *player, int direction, Map *map, Item **items)
         }
         break;
     case OUEST:
-        if (map->data[player->coordX][player->coordY - 1].isWalkable)
+        if (map->data[player->coordX][player->coordY - 1].isWalkable 
+        || (player->state == CAN_MOVE_ON_WATER && map->data[player->coordX ][player->coordY - 1].value == WATER))
         {
             player->coordY -= 1;
         }
@@ -667,7 +671,9 @@ void generateMobs(Mob **mobs, int nbMobsMax, Map *map, Player *player)
     for (int i = 0; i < nbMobsMax; i++)
     {
         mobs[i] = malloc(sizeof(Mob));
-        mobs[i]->pv = 10;
+        mobs[i]->pv = rand() % 100;
+        mobs[i]->name = generateRandomMob();
+        mobs[i]->attack = rand() % 50;
         mobs[i]->coordX = 1 + (rand() % (map->width - 1));
         mobs[i]->coordY = 1 + (rand() % (map->height - 1));
         printf("Mob %d : CoordX : %d, CoordY : %d\n", i, mobs[i]->coordX, mobs[i]->coordY);
@@ -711,7 +717,7 @@ void moveMob(Mob *mob, Map *map, Player *player, Mob **mobs, int nbMobs)
         if (mob->coordX < player->coordX)
         {
             if (map->data[mob->coordX + 1][mob->coordY].value != WATER &&
-                map->data[mob->coordX + 1][mob->coordY].value != WALL &&
+                map->data[mob->coordX + 1][mob->coordY].value != WALL_ITEM &&
                 map->data[mob->coordX + 1][mob->coordY].value != VOID &&
                 map->data[mob->coordX + 1][mob->coordY].value != CHEST &&
                 map->data[mob->coordX + 1][mob->coordY].value != LAVA)
@@ -725,7 +731,7 @@ void moveMob(Mob *mob, Map *map, Player *player, Mob **mobs, int nbMobs)
         else if (mob->coordX > player->coordX)
         {
             if (map->data[mob->coordX - 1][mob->coordY].value != WATER &&
-                map->data[mob->coordX - 1][mob->coordY].value != WALL &&
+                map->data[mob->coordX - 1][mob->coordY].value != WALL_ITEM &&
                 map->data[mob->coordX - 1][mob->coordY].value != VOID &&
                 map->data[mob->coordX + 1][mob->coordY].value != CHEST &&
                 map->data[mob->coordX + 1][mob->coordY].value != LAVA)
@@ -739,7 +745,7 @@ void moveMob(Mob *mob, Map *map, Player *player, Mob **mobs, int nbMobs)
         else if (mob->coordY < player->coordY)
         {
             if (map->data[mob->coordX][mob->coordY + 1].value != WATER &&
-                map->data[mob->coordX][mob->coordY + 1].value != WALL &&
+                map->data[mob->coordX][mob->coordY + 1].value != WALL_ITEM &&
                 map->data[mob->coordX][mob->coordY + 1].value != VOID &&
                 map->data[mob->coordX + 1][mob->coordY].value != CHEST &&
                 map->data[mob->coordX + 1][mob->coordY].value != LAVA)
@@ -753,7 +759,7 @@ void moveMob(Mob *mob, Map *map, Player *player, Mob **mobs, int nbMobs)
         else if (mob->coordY > player->coordY)
         {
             if (map->data[mob->coordX][mob->coordY - 1].value != WATER &&
-                map->data[mob->coordX][mob->coordY - 1].value != WALL &&
+                map->data[mob->coordX][mob->coordY - 1].value != WALL_ITEM &&
                 map->data[mob->coordX][mob->coordY - 1].value != VOID &&
                 map->data[mob->coordX + 1][mob->coordY].value != CHEST &&
                 map->data[mob->coordX + 1][mob->coordY].value != LAVA)
@@ -773,7 +779,7 @@ void moveMob(Mob *mob, Map *map, Player *player, Mob **mobs, int nbMobs)
         {
         case NORD:
             if (map->data[mob->coordX - 1][mob->coordY].value != WATER &&
-                map->data[mob->coordX - 1][mob->coordY].value != WALL &&
+                map->data[mob->coordX - 1][mob->coordY].value != WALL_ITEM &&
                 map->data[mob->coordX - 1][mob->coordY].value != VOID &&
                 map->data[mob->coordX + 1][mob->coordY].value != CHEST &&
                 map->data[mob->coordX + 1][mob->coordY].value != LAVA)
@@ -786,7 +792,7 @@ void moveMob(Mob *mob, Map *map, Player *player, Mob **mobs, int nbMobs)
             break;
         case SUD:
             if (map->data[mob->coordX + 1][mob->coordY].value != WATER &&
-                map->data[mob->coordX + 1][mob->coordY].value != WALL &&
+                map->data[mob->coordX + 1][mob->coordY].value != WALL_ITEM &&
                 map->data[mob->coordX + 1][mob->coordY].value != VOID &&
                 map->data[mob->coordX + 1][mob->coordY].value != CHEST &&
                 map->data[mob->coordX + 1][mob->coordY].value != LAVA)
@@ -799,7 +805,7 @@ void moveMob(Mob *mob, Map *map, Player *player, Mob **mobs, int nbMobs)
             break;
         case EST:
             if (map->data[mob->coordX][mob->coordY + 1].value != WATER &&
-                map->data[mob->coordX][mob->coordY + 1].value != WALL &&
+                map->data[mob->coordX][mob->coordY + 1].value != WALL_ITEM &&
                 map->data[mob->coordX][mob->coordY + 1].value != VOID &&
                 map->data[mob->coordX + 1][mob->coordY].value != CHEST &&
                 map->data[mob->coordX + 1][mob->coordY].value != LAVA)
@@ -812,7 +818,7 @@ void moveMob(Mob *mob, Map *map, Player *player, Mob **mobs, int nbMobs)
             break;
         case OUEST:
             if (map->data[mob->coordX][mob->coordY - 1].value != WATER &&
-                map->data[mob->coordX][mob->coordY - 1].value != WALL &&
+                map->data[mob->coordX][mob->coordY - 1].value != WALL_ITEM &&
                 map->data[mob->coordX][mob->coordY - 1].value != VOID &&
                 map->data[mob->coordX + 1][mob->coordY].value != CHEST &&
                 map->data[mob->coordX + 1][mob->coordY].value != LAVA)
@@ -837,6 +843,88 @@ int checkMobAtPosition(Mob *mob, Map *map, int height, int width, Mob **mobs, in
         }
     }
     return 0;
+}
+
+/* Method which enable the player to heal himself */
+void use(Player *player, Map *map)
+{
+
+    int slot = -1;
+    printf("What item would you like to use ? Enter a slot or press 0 to quitt : ");
+    scanf("%d", &slot);
+
+    if (slot == 0)
+    {
+        return;
+    }
+
+    while (slot < 1 || slot > 10 || player->inventory[slot - 1] == NULL)
+    {
+        printf("You don't have an item on slot %d\n", slot);
+        printf("What item would you like to use ? Enter slot or press 0 to quitt : ");
+        scanf("%d", &slot);
+
+        if (slot == 0)
+        {
+            return;
+        }
+    }
+
+    Item *item = player->inventory[slot - 1];
+
+    /* We remove the item from the player inventory */
+    player->inventory[slot - 1] = NULL;
+
+    switch (item->effect)
+    {
+    case HEAL:
+        player->pv += item->multiplier;
+        printf("You just use item %s to heal yourself by %.0lf pv\n", item->name, item->multiplier);
+        printf("You now have %dpv\n", player->pv);
+        break;
+    case ATQ_BOOST:
+        player->attack += player->attack * (item->multiplier / 100);
+        printf("You just use item %s to boost your attack by %.0lf%%\n", item->name, item->multiplier);
+        break;
+    case BOAT:
+        player->state = CAN_MOVE_ON_WATER;
+        printf("You can now navigate on water, try it :)\n");
+        break;
+    case WALL_ITEM:
+        printf("Where do you want to put your wall ?\n");
+        printf("1 - NORTH\n2 - SOUTH\n3 - EAST\n4 - WEST\nYour choice : ");
+        int response = 0;
+        scanf("%d", &response);
+        switch(response){
+            case 1:
+                map->data[player->coordX - 1][player->coordY].value = WALL_ITEM;
+                map->data[player->coordX - 1][player->coordY].isWalkable = 0;
+                map->data[player->coordX - 1][player->coordY].isVisited = 1;
+                break;
+            case 2:
+                map->data[player->coordX + 1][player->coordY].value = WALL_ITEM;
+                map->data[player->coordX + 1][player->coordY].isWalkable = 0;
+                map->data[player->coordX + 1][player->coordY].isVisited = 1;
+                break;
+            case 3:
+                map->data[player->coordX][player->coordY + 1].value = WALL_ITEM;
+                map->data[player->coordX][player->coordY + 1].isWalkable = 0;
+                map->data[player->coordX][player->coordY + 1].isVisited = 1;
+                break;
+            case 4:
+                map->data[player->coordX][player->coordY - 1].value = WALL_ITEM;
+                map->data[player->coordX][player->coordY - 1].isWalkable = 0;
+                map->data[player->coordX][player->coordY - 1].isVisited = 1;
+                break;
+            default:
+                printf("So sad, you juste have lost your wall");
+                break;
+        }
+        break;
+    default:
+        printf("You tried to use an uknown item\n");
+        break;
+    }
 }
 
 void freeMap(Map *map)
