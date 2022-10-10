@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
                 break;
             case 'i':
                 displayPlayerInventory(player);
-                use(player);
+                use(player, map);
                 break;
             case 'e':
                 saveFile(map, player);

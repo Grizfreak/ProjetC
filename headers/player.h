@@ -38,9 +38,6 @@ void initPlayer(Player *player);
 void attack(Player *player, Mob *mob,int *nbMobsNotDead);
 void attackPlayer(Mob *mob, Player *player);
 
-/* Method which enable the player to heal himself */
-void use(Player *player);
-
 /* Method which add an item to the players inventory */
 void addItemToInventory(Item *item, Player *player);
 
