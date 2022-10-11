@@ -24,5 +24,5 @@ typedef struct Mob
 } Mob;
 
 void freeMobs(Mob **mobs, int nbMobs);
-Mob **initMobs();
-Mob **generateRandomMobs(Mob **mobs, int numberOfMobs);
+int generateMobStrength();
+char *generateMobName(int strength);
