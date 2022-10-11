@@ -31,12 +31,50 @@ int displayMenu()
     return choice;
 }
 
-int newGame(Player *player, Map *map, int size)
+int newGame(Player *player, Map *map)
 {
     printf("Starting new game...\n");
     initPlayer(player);
-
-    generateMap(map, size, size);
+    int mapSize = 20;
+    printf("Which size do you want for your map ?\n");
+    scanf("%d", &mapSize);
+    printf("Which name do you want for your character ?\n");
+    scanf("%s", player->name);
+    printf("Which emoji do you want for your character ?\n");
+    int emoji = 0;
+    while (emoji < 1 || emoji > 5)
+    {
+        printf("1. 🐱\n");
+        printf("2. 🐶\n");
+        printf("3. 🐭\n");
+        printf("4. 🐹\n");
+        printf("5. 🐰\n");
+        printf("Your choice: ");
+        scanf("%d", &emoji);
+        if (emoji < 1 || emoji > 5)
+        {
+            printf("Invalid choice, please try again.\n");
+        }
+    }
+    switch (emoji)
+    {
+    case 1:
+        player->emoji = "🐱";
+        break;
+    case 2:
+        player->emoji = "🐶";
+        break;
+    case 3:
+        player->emoji = "🐭";
+        break;
+    case 4:
+        player->emoji = "🐹";
+        break;
+    case 5:
+        player->emoji = "🐰";
+        break;
+    }
+    generateMap(map, mapSize, mapSize);
     generatePlayerCoordinates(player, map);
     return 0;
 }
@@ -203,6 +241,34 @@ void saveFile(Map *map, Player *player, Mob **mobs, int nbMobsMax, int *nbMobsNo
     }
 
     // save player
+    int emojiSize = strlen(player->emoji);
+    int nameSize = strlen(player->name);
+    if (fwrite(&emojiSize, sizeof(int), 1, file) != 1)
+    {
+        printf("Error while writing emoji size in file.\n");
+        return;
+    }
+    if (fwrite(&nameSize, sizeof(int), 1, file) != 1)
+    {
+        printf("Error while writing name size in file.\n");
+        return;
+    }
+    for (int i = 0; i < emojiSize; i++)
+    {
+        if (fwrite(&player->emoji[i], sizeof(char), 1, file) != 1)
+        {
+            printf("Error while writing emoji in file.\n");
+            return;
+        }
+    }
+    for (int i = 0; i < nameSize; i++)
+    {
+        if (fwrite(&player->name[i], sizeof(char), 1, file) != 1)
+        {
+            printf("Error while writing name in file.\n");
+            return;
+        }
+    }
     if (fwrite(&player->coordX, sizeof(int), 1, file) != 1)
     {
         printf("Error while writing player x in file.\n");
@@ -412,6 +478,35 @@ int loadFile(Map *map, Player *player)
     printf("Height : %d, Width : %d\n", map->height, map->width);
 
     // load player
+    int emojiSize = 0;
+    int nameSize = 0;
+    if (fread(&emojiSize, sizeof(int), 1, file) != 1)
+    {
+        printf("Error while reading player emoji size from file.\n");
+        return 1;
+    }
+    if (fread(&nameSize, sizeof(int), 1, file) != 1)
+    {
+        printf("Error while reading player name size from file.\n");
+        return 1;
+    }
+    player->emoji = (char *)malloc(emojiSize * sizeof(char));
+    for (int i = 0; i < emojiSize; i++)
+    {
+        if (fread(&player->emoji[i], sizeof(char), 1, file) != 1)
+        {
+            printf("Error while reading player emoji from file.\n");
+            return 1;
+        }
+    }
+    for (int i = 0; i < nameSize; i++)
+    {
+        if (fread(&player->name[i], sizeof(char), 1, file) != 1)
+        {
+            printf("Error while reading player name from file.\n");
+            return 1;
+        }
+    }
     if (fread(&player->coordX, sizeof(int), 1, file) != 1)
     {
         printf("Error while reading player x from file.\n");
@@ -715,12 +810,9 @@ int launchgame()
     int moveResult = 2;
     int previousfightResult = 0;
     int fightresult = 0;
-    int mapSize = 20;
     if (result == 1)
     {
-        printf("Which size do you want for your map ?\n");
-        scanf("%d", &mapSize);
-        result = newGame(player, map, mapSize);
+        result = newGame(player, map);
     }
     else if (result == 2)
     {
@@ -856,10 +948,10 @@ void openPlayerMenu(Player *player, Map *map, Mob **mobs, int nbMobsMax, int *nb
         printf("⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣀⣀⣀⣀⣀⣀⣀⣀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n");
         printf("⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⠉⠉⠉⠉⠉⠉⠉⠉⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n");
         printf("⠀⠀⠀⠀⠀⣾⠀⣿⣿⡿⠿⠿⠿⠿⠿⠿⠿⠿⠿⠿⢿⣿⣿⠀⢷⠀⠀⠀⠀⠀\n");
-        printf("⠀⠀⠀⠀⢰⡏⠀⣿⣿⠀⣴⣶⣶⣶⣶⣶⣶⣶⣶⣦⠀⣿⣿⡀⢸⡆⠀⠀⠀⠀\n");
+        printf("⠀⠀⠀⠀⢰⡏⠀⣿⣿⠀⣴⣶⣶⣶⣶⣶⣶⣶⣶⣦⠀⣿⣿⡀⢸⡆⠀⠀⠀⠀                                     Name : %s\n", player->name);
         printf("⠀⠀⠀⠀⢸⡇⠀⣿⣿⣆⠘⠻⠇⢠⣤⣤⡄⠸⠟⠋⣠⣿⣿⡇⢸⡇⠀⠀⠀⠀                                     pv :  %d \n", player->pv);
         printf("⠀⠀⠀⠀⢸⣇⠀⣿⣿⣿⣿⣶⣆⣈⣉⣉⣁⣰⣶⣿⣿⣿⣿⠃⢸⡇⠀⠀⠀⠀                                     XP :  %d \n", player->currentXp);
-        printf("⠀⠀⠀⠀⠈⣿⣀⣉⣉⠉⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠉⣉⣉⣀⣿⠀⠀⠀⠀⠀\n");
+        printf("⠀⠀⠀⠀⠈⣿⣀⣉⣉⠉⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠉⣉⣉⣀⣿⠀⠀⠀⠀⠀                                     emoji : %s\n", player->emoji);
         printf("⠀⠀⢀⡴⠀⣉⣉⠉⠉⠉⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠉⠉⠉⣉⣉⠀⢦⡀⠀⠀\n");
         printf("⠀⠀⠈⣀⠀⣿⣿⠀⣿⣿⠀⠛⠛⠉⠉⠉⠉⠛⠛⠀⣿⣿⠀⣿⣿⠀⣀⠁⠀⠀\n");
         printf("⠀⠀⢸⡇⢀⣿⣿⠀⣿⣿⠀⣿⣿⣿⣿⣿⣿⣿⣿⠀⣿⣿⠀⣿⣿⡀⢸⡇⠀⠀\n");
