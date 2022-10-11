@@ -556,6 +556,7 @@ int fight(Player *player, Mob *mob, int *nbMobsNotDead)
             {
                 printf("You have failed to attack the %s.\n", mob->name);
             }
+            free(enigma);
             break;
         case 2:
             enigma = generateEnigma();
@@ -575,6 +576,7 @@ int fight(Player *player, Mob *mob, int *nbMobsNotDead)
             {
                 printf("You have failed to defend against the %s.\n", mob->name);
             }
+            free(enigma);
             break;
         case 3:
             enigma = generateEnigma();
@@ -593,6 +595,7 @@ int fight(Player *player, Mob *mob, int *nbMobsNotDead)
             {
                 printf("You have failed to flee from the %s.\n", mob->name);
             }
+            free(enigma);
 
             break;
         default:
@@ -604,7 +607,7 @@ int fight(Player *player, Mob *mob, int *nbMobsNotDead)
         {
             break;
         }
-        if (isDefending == 1)
+        else if (isDefending == 1)
         {
             printf("The %s has attacked you.\n", mob->name);
             printf("But you defended yourself.\n");
@@ -612,7 +615,6 @@ int fight(Player *player, Mob *mob, int *nbMobsNotDead)
         }
         else
         {
-
             if (mob->isDead == 0)
             {
                 printf("The %s has attacked you.\n", mob->name);
@@ -620,6 +622,12 @@ int fight(Player *player, Mob *mob, int *nbMobsNotDead)
             }
             else
             {
+                break;
+            }
+            if (player->pv <= 0)
+            {
+                player->isDead = 1;
+                printf("You have died.\n");
                 break;
             }
         }
@@ -732,7 +740,99 @@ int launchgame()
                     {
 
                         fightresult = fight(player, mobs[i], nbMobsNotDead);
-                        printf("nbMobsNotDead = %d", *nbMobsNotDead);
+                        if (*nbMobsNotDead < 2)
+                        {
+                            generateMobs(mobs, nbMobsMax, map, player);
+                            *nbMobsNotDead = nbMobsMax;
+                        }
+                    }
+                }
+            }
+            if (fightresult == 3)
+            {
+                freeEverything(map, player, mobs, nbMobsMax, nbMobsNotDead);
+                return 0;
+            }
+            if (moveResult == 0 && fightresult != 2)
+            {
+                // move all mobs
+                for (int i = 0; i < nbMobsMax; i++)
+                {
+                    moveMob(mobs[i], map, player, mobs, nbMobsMax);
+                }
+            }
+            // If mob is on the player's position
+            if (fightresult != 2)
+            {
+                for (int i = 0; i < nbMobsMax; i++)
+                {
+                    if (mobs[i]->isDead == 0)
+                    {
+                        if (mobs[i]->coordX == player->coordX && mobs[i]->coordY == player->coordY)
+                        {
+                            fightresult = fight(player, mobs[i], nbMobsNotDead);
+                            if (*nbMobsNotDead < 2)
+                            {
+                                generateMobs(mobs, nbMobsMax, map, player);
+                                *nbMobsNotDead = nbMobsMax;
+                            }
+                        }
+                    }
+                }
+            }
+            system("clear");
+            displayMap5x5(map, player, mobs, nbMobsMax);
+            if (fightresult == 2 && previousfightResult == 2)
+            {
+                fightresult = 0;
+            }
+            else
+            {
+                previousfightResult = fightresult;
+            }
+        }
+    }
+    else if (result == 2)
+    {
+        loadFile(map, player);
+        nbMobsMax = (int)(round((2.5 / 100.0) * (map->height * map->width)));
+        *nbMobsNotDead = nbMobsMax;
+        mobs = (Mob **)malloc(sizeof(Mob *) * nbMobsMax);
+        generateMobs(mobs, nbMobsMax, map, player);
+        system("clear");
+        displayMap5x5(map, player, mobs, nbMobsMax);
+
+        while (isPlayerAlive(player, map))
+        {
+            switch (displayActionsMenu())
+            {
+            case 'z':
+                moveResult = move(player, NORD, map, items);
+                break;
+            case 's':
+                moveResult = move(player, SUD, map, items);
+                break;
+            case 'd':
+                moveResult = move(player, EST, map, items);
+                break;
+            case 'q':
+                moveResult = move(player, OUEST, map, items);
+                break;
+            case 'b':
+                openPlayerMenu(player, map, mobs, nbMobsMax, nbMobsNotDead);
+                break;
+            default:
+                break;
+            };
+            // If there is mob on the player's position
+            for (int i = 0; i < nbMobsMax; i++)
+            {
+                if (mobs[i]->isDead == 0)
+                {
+                    if (mobs[i]->coordX == player->coordX && mobs[i]->coordY == player->coordY)
+                    {
+
+                        fightresult = fight(player, mobs[i], nbMobsNotDead);
                         if (*nbMobsNotDead < 2)
                         {
                             generateMobs(mobs, nbMobsMax, map, player);
@@ -759,7 +859,6 @@ int launchgame()
                         if (mobs[i]->coordX == player->coordX && mobs[i]->coordY == player->coordY)
                         {
                             fightresult = fight(player, mobs[i], nbMobsNotDead);
-                            printf("nbMobsNotDead = %d", *nbMobsNotDead);
                             if (*nbMobsNotDead < 2)
                             {
                                 generateMobs(mobs, nbMobsMax, map, player);
@@ -771,7 +870,6 @@ int launchgame()
             }
             system("clear");
             displayMap5x5(map, player, mobs, nbMobsMax);
-            displayPlayerInventory(player);
             if (fightresult == 2 && previousfightResult == 2)
             {
                 fightresult = 0;
@@ -781,17 +879,6 @@ int launchgame()
                 previousfightResult = fightresult;
             }
         }
-    }
-    else if (result == 2)
-    {
-        loadFile(map, player);
-        nbMobsMax = (int)(round((2.5 / 100.0) * (map->height * map->width)));
-        *nbMobsNotDead = nbMobsMax;
-        mobs = (Mob **)malloc(sizeof(Mob *) * nbMobsMax);
-        generateMobs(mobs, nbMobsMax, map, player);
-        system("clear");
-        displayMap5x5(map, player, mobs, nbMobsMax);
-        displayPlayerInventory(player);
     }
     else if (result == 3)
     {
