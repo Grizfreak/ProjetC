@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include "mob.h"
 #include "item.h"
+#include <math.h>
 
 /* Const that define all cardinal directions */
 #define NORD 0
@@ -43,3 +44,5 @@ void addItemToInventory(Item *item, Player *player);
 
 /* Method which is used to display the inventory of the player */
 void displayPlayerInventory(Player *player);
+
+void checkXp(Player *player);
