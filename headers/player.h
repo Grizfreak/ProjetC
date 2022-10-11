@@ -26,7 +26,6 @@ typedef struct Player
     int pv;
     int attack;
     int currentXp;
-    int XpUntilLeveling;
     int state;
     int isDead;
     Item *inventory[10];

@@ -7,7 +7,6 @@ void initPlayer(Player *player)
     player->attack = 10;
     player->state = DEFAULT;
     player->currentXp = 0;
-    player->XpUntilLeveling = 25;
     player->isDead = 0;
 
     /* We initialize player's inventory as NULL for every slot */
@@ -79,9 +78,10 @@ void displayPlayerInventory(Player *player)
     }
 }
 
-void checkXp(Player *player){
+void checkXp(Player *player)
+{
 
-    int level = (int) log2(player->currentXp);
+    int level = (int)log2(player->currentXp);
 
     /* Increment player's attack and pv */
     player->attack = 10 + (2 * level);
@@ -90,5 +90,4 @@ void checkXp(Player *player){
     player->pv = 100 + 5 * level;
 
     printf("XP : %d", player->currentXp);
-
 }
