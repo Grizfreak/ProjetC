@@ -31,12 +31,50 @@ int displayMenu()
     return choice;
 }
 
-int newGame(Player *player, Map *map, int size)
+int newGame(Player *player, Map *map)
 {
     printf("Starting new game...\n");
     initPlayer(player);
-
-    generateMap(map, size, size);
+    int mapSize = 20;
+    printf("Which size do you want for your map ?\n");
+    scanf("%d", &mapSize);
+    printf("Which name do you want for your character ?\n");
+    scanf("%s", player->name);
+    printf("Which emoji do you want for your character ?\n");
+    int emoji = 0;
+    while (emoji < 1 || emoji > 5)
+    {
+        printf("1. 🐱\n");
+        printf("2. 🐶\n");
+        printf("3. 🐭\n");
+        printf("4. 🐹\n");
+        printf("5. 🐰\n");
+        printf("Your choice: ");
+        scanf("%d", &emoji);
+        if (emoji < 1 || emoji > 5)
+        {
+            printf("Invalid choice, please try again.\n");
+        }
+    }
+    switch (emoji)
+    {
+    case 1:
+        player->emoji = "🐱";
+        break;
+    case 2:
+        player->emoji = "🐶";
+        break;
+    case 3:
+        player->emoji = "🐭";
+        break;
+    case 4:
+        player->emoji = "🐹";
+        break;
+    case 5:
+        player->emoji = "🐰";
+        break;
+    }
+    generateMap(map, mapSize, mapSize);
     generatePlayerCoordinates(player, map);
     return 0;
 }
@@ -203,6 +241,34 @@ void saveFile(Map *map, Player *player, Mob **mobs, int nbMobsMax, int *nbMobsNo
     }
 
     // save player
+    int emojiSize = strlen(player->emoji);
+    int nameSize = strlen(player->name);
+    if (fwrite(&emojiSize, sizeof(int), 1, file) != 1)
+    {
+        printf("Error while writing emoji size in file.\n");
+        return;
+    }
+    if (fwrite(&nameSize, sizeof(int), 1, file) != 1)
+    {
+        printf("Error while writing name size in file.\n");
+        return;
+    }
+    for (int i = 0; i < emojiSize; i++)
+    {
+        if (fwrite(&player->emoji[i], sizeof(char), 1, file) != 1)
+        {
+            printf("Error while writing emoji in file.\n");
+            return;
+        }
+    }
+    for (int i = 0; i < nameSize; i++)
+    {
+        if (fwrite(&player->name[i], sizeof(char), 1, file) != 1)
+        {
+            printf("Error while writing name in file.\n");
+            return;
+        }
+    }
     if (fwrite(&player->coordX, sizeof(int), 1, file) != 1)
     {
         printf("Error while writing player x in file.\n");
@@ -226,11 +292,6 @@ void saveFile(Map *map, Player *player, Mob **mobs, int nbMobsMax, int *nbMobsNo
     if (fwrite(&player->currentXp, sizeof(int), 1, file) != 1)
     {
         printf("Error while writing player defense in file.\n");
-        return;
-    }
-    if (fwrite(&player->XpUntilLeveling, sizeof(int), 1, file) != 1)
-    {
-        printf("Error while writing player level in file.\n");
         return;
     }
     if (fwrite(&player->state, sizeof(int), 1, file) != 1)
@@ -303,7 +364,7 @@ void saveFile(Map *map, Player *player, Mob **mobs, int nbMobsMax, int *nbMobsNo
     }
 }
 
-void loadFile(Map *map, Player *player)
+int loadFile(Map *map, Player *player)
 {
     // TODO check if folder exists
     FILE *file;
@@ -356,21 +417,21 @@ void loadFile(Map *map, Player *player)
         if ((file = fopen("savedata/save1.dat", "rb")) == NULL)
         {
             printf("Error while opening file.\n");
-            return;
+            return 1;
         }
         break;
     case 2:
         if ((file = fopen("savedata/save2.dat", "rb")) == NULL)
         {
             printf("Error while opening file.\n");
-            return;
+            return 1;
         }
         break;
     case 3:
         if ((file = fopen("savedata/save3.dat", "rb")) == NULL)
         {
             printf("Error while opening file.\n");
-            return;
+            return 1;
         }
         break;
     }
@@ -378,14 +439,14 @@ void loadFile(Map *map, Player *player)
     if (fread(&map->height, sizeof(int), 1, file) != 1)
     {
         printf("Error while reading height from file.\n");
-        return;
+        return 1;
     }
 
     printf("Height: %d\n", map->height);
     if (fread(&map->width, sizeof(int), 1, file) != 1)
     {
         printf("Error while reading width from file.\n");
-        return;
+        return 1;
     }
 
     map->data = (Block **)realloc(map->data, map->width * sizeof(Block *));
@@ -400,69 +461,93 @@ void loadFile(Map *map, Player *player)
             if (fread(&map->data[i][j].value, sizeof(int), 1, file) != 1)
             {
                 printf("Error while reading data from file.\n");
-                return;
+                return 1;
             }
             if (fread(&map->data[i][j].isWalkable, sizeof(int), 1, file) != 1)
             {
                 printf("Error while reading data from file.\n");
-                return;
+                return 1;
             }
             if (fread(&map->data[i][j].isVisited, sizeof(int), 1, file) != 1)
             {
                 printf("Error while reading data from file.\n");
-                return;
+                return 1;
             }
         }
     }
     printf("Height : %d, Width : %d\n", map->height, map->width);
 
     // load player
+    int emojiSize = 0;
+    int nameSize = 0;
+    if (fread(&emojiSize, sizeof(int), 1, file) != 1)
+    {
+        printf("Error while reading player emoji size from file.\n");
+        return 1;
+    }
+    if (fread(&nameSize, sizeof(int), 1, file) != 1)
+    {
+        printf("Error while reading player name size from file.\n");
+        return 1;
+    }
+    player->emoji = (char *)malloc(emojiSize * sizeof(char));
+    for (int i = 0; i < emojiSize; i++)
+    {
+        if (fread(&player->emoji[i], sizeof(char), 1, file) != 1)
+        {
+            printf("Error while reading player emoji from file.\n");
+            return 1;
+        }
+    }
+    for (int i = 0; i < nameSize; i++)
+    {
+        if (fread(&player->name[i], sizeof(char), 1, file) != 1)
+        {
+            printf("Error while reading player name from file.\n");
+            return 1;
+        }
+    }
     if (fread(&player->coordX, sizeof(int), 1, file) != 1)
     {
         printf("Error while reading player x from file.\n");
-        return;
+        return 1;
     }
     if (fread(&player->coordY, sizeof(int), 1, file) != 1)
     {
         printf("Error while reading player y from file.\n");
-        return;
+        return 1;
     }
     if (fread(&player->pv, sizeof(int), 1, file) != 1)
     {
         printf("Error while reading player health from file.\n");
-        return;
+        return 1;
     }
     if (fread(&player->attack, sizeof(int), 1, file) != 1)
     {
         printf("Error while reading player attack from file.\n");
-        return;
+        return 1;
     }
     if (fread(&player->currentXp, sizeof(int), 1, file) != 1)
     {
         printf("Error while reading player defense from file.\n");
-        return;
-    }
-    if (fread(&player->XpUntilLeveling, sizeof(int), 1, file) != 1)
-    {
-        printf("Error while reading player level from file.\n");
-        return;
+        return 1;
     }
     if (fread(&player->state, sizeof(int), 1, file) != 1)
     {
         printf("Error while reading player level from file.\n");
-        return;
+        return 1;
     }
     if (fread(&player->isDead, sizeof(int), 1, file) != 1)
     {
         printf("Error while reading player level from file.\n");
-        return;
+        return 1;
     }
     // load inventory
     int nbItemsSaved = 0;
     if (fread(&nbItemsSaved, sizeof(int), 1, file) != 1)
     {
         printf("Error while reading inventory from file.\n");
-        return;
+        return 1;
     }
     printf("nbItemsSaved: %d\n", nbItemsSaved);
     for (int i = 0; i < nbItemsSaved; i++)
@@ -473,17 +558,17 @@ void loadFile(Map *map, Player *player)
         if (fread(&effect, sizeof(int), 1, file) != 1)
         {
             printf("Error while reading inventory from file.\n");
-            return;
+            return 1;
         }
         if (fread(&multiplier, sizeof(float), 1, file) != 1)
         {
             printf("Error while reading inventory from file.\n");
-            return;
+            return 1;
         }
         if (fread(&size, sizeof(int), 1, file) != 1)
         {
             printf("Error while reading inventory from file.\n");
-            return;
+            return 1;
         }
         printf("Effect : %d, Multiplier : %f, Size : %d\n", effect, multiplier, size);
         char *name = (char *)malloc(size * sizeof(char));
@@ -492,7 +577,7 @@ void loadFile(Map *map, Player *player)
             if (fread(&name[j], sizeof(char), 1, file) != 1)
             {
                 printf("Error while reading inventory from file.\n");
-                return;
+                return 1;
             }
         }
         printf("Name : %s\n", name);
@@ -503,6 +588,7 @@ void loadFile(Map *map, Player *player)
     }
     printf("File loaded.\n");
     fclose(file);
+    return 0;
     //   printf("Not implemented yet.\n");
 }
 
@@ -724,194 +810,114 @@ int launchgame()
     int moveResult = 2;
     int previousfightResult = 0;
     int fightresult = 0;
-    int mapSize = 20;
     if (result == 1)
     {
-        printf("Which size do you want for your map ?\n");
-        scanf("%d", &mapSize);
-        result = newGame(player, map, mapSize);
-        nbMobsMax = (int)(round((2.5 / 100.0) * (map->height * map->width)));
-        *nbMobsNotDead = nbMobsMax;
-        mobs = (Mob **)malloc(sizeof(Mob *) * nbMobsMax);
-        generateMobs(mobs, nbMobsMax, map, player);
-        system("clear");
-        displayMap5x5(map, player, mobs, nbMobsMax);
-
-        while (isPlayerAlive(player, map))
-        {
-            switch (displayActionsMenu())
-            {
-            case 'z':
-                moveResult = move(player, NORD, map, items);
-                break;
-            case 's':
-                moveResult = move(player, SUD, map, items);
-                break;
-            case 'd':
-                moveResult = move(player, EST, map, items);
-                break;
-            case 'q':
-                moveResult = move(player, OUEST, map, items);
-                break;
-            case 'b':
-                openPlayerMenu(player, map, mobs, nbMobsMax, nbMobsNotDead);
-                break;
-            default:
-                break;
-            };
-            // If there is mob on the player's position
-            for (int i = 0; i < nbMobsMax; i++)
-            {
-                if (mobs[i]->isDead == 0)
-                {
-                    if (mobs[i]->coordX == player->coordX && mobs[i]->coordY == player->coordY)
-                    {
-
-                        fightresult = fight(player, mobs[i], nbMobsNotDead);
-                        if (*nbMobsNotDead < 2)
-                        {
-                            generateMobs(mobs, nbMobsMax, map, player);
-                            *nbMobsNotDead = nbMobsMax;
-                        }
-                    }
-                }
-            }
-            if (fightresult == 3)
-            {
-                freeEverything(map, player, mobs, nbMobsMax, nbMobsNotDead);
-                return 0;
-            }
-            if (moveResult == 0 && fightresult != 2)
-            {
-                // move all mobs
-                for (int i = 0; i < nbMobsMax; i++)
-                {
-                    moveMob(mobs[i], map, player, mobs, nbMobsMax);
-                }
-            }
-            // If mob is on the player's position
-            if (fightresult != 2)
-            {
-                for (int i = 0; i < nbMobsMax; i++)
-                {
-                    if (mobs[i]->isDead == 0)
-                    {
-                        if (mobs[i]->coordX == player->coordX && mobs[i]->coordY == player->coordY)
-                        {
-                            fightresult = fight(player, mobs[i], nbMobsNotDead);
-                            if (*nbMobsNotDead < 2)
-                            {
-                                generateMobs(mobs, nbMobsMax, map, player);
-                                *nbMobsNotDead = nbMobsMax;
-                            }
-                        }
-                    }
-                }
-            }
-            system("clear");
-            displayMap5x5(map, player, mobs, nbMobsMax);
-            if (fightresult == 2 && previousfightResult == 2)
-            {
-                fightresult = 0;
-            }
-            else
-            {
-                previousfightResult = fightresult;
-            }
-        }
+        result = newGame(player, map);
     }
     else if (result == 2)
     {
-        loadFile(map, player);
-        nbMobsMax = (int)(round((2.5 / 100.0) * (map->height * map->width)));
-        *nbMobsNotDead = nbMobsMax;
-        mobs = (Mob **)malloc(sizeof(Mob *) * nbMobsMax);
-        generateMobs(mobs, nbMobsMax, map, player);
-        system("clear");
-        displayMap5x5(map, player, mobs, nbMobsMax);
-
-        while (isPlayerAlive(player, map))
+        int resultLoad = 0;
+        resultLoad = loadFile(map, player);
+        if (resultLoad == 1)
         {
-            switch (displayActionsMenu())
-            {
-            case 'z':
-                moveResult = move(player, NORD, map, items);
-                break;
-            case 's':
-                moveResult = move(player, SUD, map, items);
-                break;
-            case 'd':
-                moveResult = move(player, EST, map, items);
-                break;
-            case 'q':
-                moveResult = move(player, OUEST, map, items);
-                break;
-            case 'b':
-                openPlayerMenu(player, map, mobs, nbMobsMax, nbMobsNotDead);
-                break;
-            default:
-                break;
-            };
-            // If there is mob on the player's position
-            for (int i = 0; i < nbMobsMax; i++)
-            {
-                if (mobs[i]->isDead == 0)
-                {
-                    if (mobs[i]->coordX == player->coordX && mobs[i]->coordY == player->coordY)
-                    {
-
-                        fightresult = fight(player, mobs[i], nbMobsNotDead);
-                        if (*nbMobsNotDead < 2)
-                        {
-                            generateMobs(mobs, nbMobsMax, map, player);
-                            *nbMobsNotDead = nbMobsMax;
-                        }
-                    }
-                }
-            }
-            if (moveResult == 0 && fightresult != 2)
-            {
-                // move all mobs
-                for (int i = 0; i < nbMobsMax; i++)
-                {
-                    moveMob(mobs[i], map, player, mobs, nbMobsMax);
-                }
-            }
-            // If mob is on the player's position
-            if (fightresult != 2)
-            {
-                for (int i = 0; i < nbMobsMax; i++)
-                {
-                    if (mobs[i]->isDead == 0)
-                    {
-                        if (mobs[i]->coordX == player->coordX && mobs[i]->coordY == player->coordY)
-                        {
-                            fightresult = fight(player, mobs[i], nbMobsNotDead);
-                            if (*nbMobsNotDead < 2)
-                            {
-                                generateMobs(mobs, nbMobsMax, map, player);
-                                *nbMobsNotDead = nbMobsMax;
-                            }
-                        }
-                    }
-                }
-            }
-            system("clear");
-            displayMap5x5(map, player, mobs, nbMobsMax);
-            if (fightresult == 2 && previousfightResult == 2)
-            {
-                fightresult = 0;
-            }
-            else
-            {
-                previousfightResult = fightresult;
-            }
+            printf("Error while loading the file.\n");
+            freeEverything(map, player, mobs, nbMobsMax, nbMobsNotDead);
+            exit(0);
         }
     }
     else if (result == 3)
     {
         freeEverything(map, player, mobs, nbMobsMax, nbMobsNotDead);
         return 0;
+    }
+    nbMobsMax = (int)(round((2.5 / 100.0) * (map->height * map->width)));
+    *nbMobsNotDead = nbMobsMax;
+    mobs = (Mob **)malloc(sizeof(Mob *) * nbMobsMax);
+    generateMobs(mobs, nbMobsMax, map, player);
+    system("clear");
+    displayMap5x5(map, player, mobs, nbMobsMax);
+
+    while (isPlayerAlive(player, map))
+    {
+        switch (displayActionsMenu())
+        {
+        case 'z':
+            moveResult = move(player, NORD, map, items);
+            break;
+        case 's':
+            moveResult = move(player, SUD, map, items);
+            break;
+        case 'd':
+            moveResult = move(player, EST, map, items);
+            break;
+        case 'q':
+            moveResult = move(player, OUEST, map, items);
+            break;
+        case 'b':
+            openPlayerMenu(player, map, mobs, nbMobsMax, nbMobsNotDead);
+            break;
+        default:
+            break;
+        };
+        // If there is mob on the player's position
+        for (int i = 0; i < nbMobsMax; i++)
+        {
+            if (mobs[i]->isDead == 0)
+            {
+                if (mobs[i]->coordX == player->coordX && mobs[i]->coordY == player->coordY)
+                {
+
+                    fightresult = fight(player, mobs[i], nbMobsNotDead);
+                    if (*nbMobsNotDead < 2)
+                    {
+                        generateMobs(mobs, nbMobsMax, map, player);
+                        *nbMobsNotDead = nbMobsMax;
+                    }
+                }
+            }
+        }
+        if (fightresult == 3)
+        {
+            freeEverything(map, player, mobs, nbMobsMax, nbMobsNotDead);
+            return 0;
+        }
+        if (moveResult == 0 && fightresult != 2)
+        {
+            // move all mobs
+            for (int i = 0; i < nbMobsMax; i++)
+            {
+                moveMob(mobs[i], map, player, mobs, nbMobsMax);
+            }
+        }
+        // If mob is on the player's position
+        if (fightresult != 2)
+        {
+            for (int i = 0; i < nbMobsMax; i++)
+            {
+                if (mobs[i]->isDead == 0)
+                {
+                    if (mobs[i]->coordX == player->coordX && mobs[i]->coordY == player->coordY)
+                    {
+                        fightresult = fight(player, mobs[i], nbMobsNotDead);
+                        if (*nbMobsNotDead < 2)
+                        {
+                            generateMobs(mobs, nbMobsMax, map, player);
+                            *nbMobsNotDead = nbMobsMax;
+                        }
+                    }
+                }
+            }
+        }
+        system("clear");
+        displayMap5x5(map, player, mobs, nbMobsMax);
+        if (fightresult == 2 && previousfightResult == 2)
+        {
+            fightresult = 0;
+        }
+        else
+        {
+            previousfightResult = fightresult;
+        }
     }
     freeEverything(map, player, mobs, nbMobsMax, nbMobsNotDead);
     return 0;
@@ -938,6 +944,22 @@ void openPlayerMenu(Player *player, Map *map, Mob **mobs, int nbMobsMax, int *nb
     while (1)
     {
         system("clear");
+        printf("=====================================\n");
+        printf("⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣀⣀⣀⣀⣀⣀⣀⣀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n");
+        printf("⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⠉⠉⠉⠉⠉⠉⠉⠉⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n");
+        printf("⠀⠀⠀⠀⠀⣾⠀⣿⣿⡿⠿⠿⠿⠿⠿⠿⠿⠿⠿⠿⢿⣿⣿⠀⢷⠀⠀⠀⠀⠀\n");
+        printf("⠀⠀⠀⠀⢰⡏⠀⣿⣿⠀⣴⣶⣶⣶⣶⣶⣶⣶⣶⣦⠀⣿⣿⡀⢸⡆⠀⠀⠀⠀                                     Name : %s\n", player->name);
+        printf("⠀⠀⠀⠀⢸⡇⠀⣿⣿⣆⠘⠻⠇⢠⣤⣤⡄⠸⠟⠋⣠⣿⣿⡇⢸⡇⠀⠀⠀⠀                                     pv :  %d \n", player->pv);
+        printf("⠀⠀⠀⠀⢸⣇⠀⣿⣿⣿⣿⣶⣆⣈⣉⣉⣁⣰⣶⣿⣿⣿⣿⠃⢸⡇⠀⠀⠀⠀                                     XP :  %d \n", player->currentXp);
+        printf("⠀⠀⠀⠀⠈⣿⣀⣉⣉⠉⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠉⣉⣉⣀⣿⠀⠀⠀⠀⠀                                     emoji : %s\n", player->emoji);
+        printf("⠀⠀⢀⡴⠀⣉⣉⠉⠉⠉⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠉⠉⠉⣉⣉⠀⢦⡀⠀⠀\n");
+        printf("⠀⠀⠈⣀⠀⣿⣿⠀⣿⣿⠀⠛⠛⠉⠉⠉⠉⠛⠛⠀⣿⣿⠀⣿⣿⠀⣀⠁⠀⠀\n");
+        printf("⠀⠀⢸⡇⢀⣿⣿⠀⣿⣿⠀⣿⣿⣿⣿⣿⣿⣿⣿⠀⣿⣿⠀⣿⣿⡀⢸⡇⠀⠀\n");
+        printf("⠀⠀⢸⡇⢸⣿⠀⣤⡤⢤⣄⠘⠻⠿⠿⠿⠿⠟⠃⣠⡤⢤⣤⠀⣿⡇⢸⡇⠀⠀\n");
+        printf("⠀⠀⢠⡄⢸⣿⠀⠛⠃⠘⠋⢸⣶⣶⣆⣰⣶⣶⡇⠙⠃⠘⠛⠀⣿⡇⢠⡄⠀⠀\n");
+        printf("⠀⠀⢠⡄⠸⣿⣿⠀⠷⠞⠀⠛⠛⠿⠿⠿⠿⠛⠛⠀⠳⠾⠀⣿⣿⠇⢠⡄⠀⠀\n");
+        printf("⠀⠀⠘⠗⠀⣿⣿⠀⣶⣶⠀⣿⣷⣶⣶⣶⣶⣾⣿⠀⣶⣶⠀⣿⣿⠀⠺⠃⠀⠀\n");
+        printf("⠀⠀⠀⠀⠀⠉⠉⠀⠉⠉⠀⠉⠉⠉⠉⠉⠉⠉⠉⠀⠉⠉⠀⠉⠉⠀⠀⠀⠀⠀\n");
         printf("=====================================\n");
         displayPlayerInventory(player);
         printf("=====================================\n");

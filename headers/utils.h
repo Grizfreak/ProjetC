@@ -19,7 +19,7 @@ typedef struct Enigma
 int displayMenu();
 
 /* Method which initialize a new game */
-int newGame(Player *player, Map *map, int size);
+int newGame(Player *player, Map *map);
 
 /* Method which clear the buffer */
 void clearBuffer();
@@ -28,7 +28,7 @@ void clearBuffer();
 void saveFile(Map *map, Player *player, Mob **mobs, int nbMobsMax, int *nbMobsNotDead);
 
 /* Method which load the map saved in the file */
-void loadFile(Map *map, Player *player);
+int loadFile(Map *map, Player *player);
 
 /* Method which display to the player the movement actions he can do */
 /* He can go through several directions like NORTH, SOUTH, EAST and WEST */

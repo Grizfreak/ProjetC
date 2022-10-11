@@ -21,12 +21,12 @@
 typedef struct Player
 {
     char name[32];
+    char *emoji;
     int coordX;
     int coordY;
     int pv;
     int attack;
     int currentXp;
-    int XpUntilLeveling;
     int state;
     int isDead;
     Item *inventory[10];
@@ -36,7 +36,7 @@ typedef struct Player
 void initPlayer(Player *player);
 
 /* Method which allow the player to attack a mob */
-void attack(Player *player, Mob *mob,int *nbMobsNotDead);
+void attack(Player *player, Mob *mob, int *nbMobsNotDead);
 void attackPlayer(Mob *mob, Player *player);
 
 /* Method which add an item to the players inventory */
