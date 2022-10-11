@@ -628,6 +628,31 @@ int fight(Player *player, Mob *mob, int *nbMobsNotDead)
     }
     if (mob->isDead == 1)
     {
+        switch (mob->strength)
+        {
+        case VERY_SMALL:
+            player->currentXp += 5;
+            break;
+        case SMALL:
+            player->currentXp += 7;
+            break;
+        case MEDIUM:
+            player->currentXp += 13;
+            break;
+        case LARGE:
+            player->currentXp += 25;
+            break;
+        case VERY_LARGE:
+            player->currentXp += 60;
+            break;
+        case GIGANTIC:
+            player->currentXp += 125;
+            break;
+        default:
+            printf("Dommage, tu ne gagnes pas d'XP sur ce mob\n");
+            break;
+        }
+        checkXp(player);
         printf("You have killed the %s.\n", mob->name);
         printf("Press any key to continue.\n");
         getchar();

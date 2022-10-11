@@ -78,3 +78,17 @@ void displayPlayerInventory(Player *player)
         }
     }
 }
+
+void checkXp(Player *player){
+
+    int level = (int) log2(player->currentXp);
+
+    /* Increment player's attack and pv */
+    player->attack = 10 + (2 * level);
+
+    /* Regenerate player's life */
+    player->pv = 100 + 5 * level;
+
+    printf("XP : %d", player->currentXp);
+
+}
