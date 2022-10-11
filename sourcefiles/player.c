@@ -28,6 +28,7 @@ void attack(Player *player, Mob *mob, int *nbMobsNotDead)
         mob->isDead = 1;
         *nbMobsNotDead -= 1;
     }
+    printf("Mob %s now have %dpv\n", mob->name, mob->pv);
 }
 
 void attackPlayer(Mob *mob, Player *player)

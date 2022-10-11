@@ -652,7 +652,7 @@ void askPlayerToAddItem(Player *player, Item *item)
 int isPlayerAlive(Player *player, Map *map)
 {
     /* First we check the attribute of the player and his life */
-    if (player->isDead == 1 || player->pv == 0)
+    if (player->isDead == 1 || player->pv <= 0)
     {
         printf("Player is dead because he lost all his pv !\n");
         return 0;
@@ -680,8 +680,8 @@ void generateMobs(Mob **mobs, int nbMobsMax, Map *map, Player *player)
 
         switch(mobs[i]->strength){
             case VERY_SMALL:
-                mobs[i]->pv = rand() % 20;
-                mobs[i]->attack = rand() % 5;
+                mobs[i]->pv = 1 + rand() % 20;
+                mobs[i]->attack = 1 + rand() % 5;
                 break;
             case SMALL:
                 mobs[i]->pv = 20 + rand() % (31 - 20);
