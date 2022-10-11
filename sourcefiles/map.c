@@ -693,7 +693,7 @@ void askPlayerToAddItem(Player *player, Item *item)
 int isPlayerAlive(Player *player, Map *map)
 {
     /* First we check the attribute of the player and his life */
-    if (player->isDead == 1 || player->pv == 0)
+    if (player->isDead == 1 || player->pv <= 0)
     {
         printf("Player is dead because he lost all his pv !\n");
         return 0;
@@ -712,25 +712,57 @@ void generateMobs(Mob **mobs, int nbMobsMax, Map *map, Player *player)
     for (int i = 0; i < nbMobsMax; i++)
     {
         mobs[i] = malloc(sizeof(Mob));
-        mobs[i]->pv = rand() % 100;
-        mobs[i]->name = generateRandomMob();
-        mobs[i]->attack = rand() % 50;
+        mobs[i]->strength = generateMobStrength();
+        mobs[i]->name = generateMobName(mobs[i]->strength);
+        //printf("%s", mobs[i]->name);
         mobs[i]->coordX = 1 + (rand() % (map->width - 1));
         mobs[i]->coordY = 1 + (rand() % (map->height - 1));
-        printf("Mob %d : CoordX : %d, CoordY : %d\n", i, mobs[i]->coordX, mobs[i]->coordY);
+        mobs[i]->isDead = 0;
+
+        switch(mobs[i]->strength){
+            case VERY_SMALL:
+                mobs[i]->pv = 1 + rand() % 20;
+                mobs[i]->attack = 1 + rand() % 5;
+                break;
+            case SMALL:
+                mobs[i]->pv = 20 + rand() % (31 - 20);
+                mobs[i]->attack = 5 + rand() % (9 - 5);
+                break;
+            case MEDIUM:
+                mobs[i]->pv = 30 + rand() % (38 - 30);
+                mobs[i]->attack = 8 + rand() % (13 - 8);
+                break;
+            case LARGE:
+                mobs[i]->pv = 37 + rand() % (46 - 37);
+                mobs[i]->attack = 12 + rand() % (16 - 12);
+                break;
+            case VERY_LARGE:
+                mobs[i]->pv = 45 + rand() % (71 - 45);
+                mobs[i]->attack = 15 + rand() % (24 - 15);
+                break;
+            case GIGANTIC:
+                mobs[i]->pv =  70 + rand() % (121 - 70);
+                mobs[i]->attack = 23 + rand() % (36 - 23);
+                break;
+            default:
+                printf("Uknown strength of mob\n");
+                break;
+        }
+
         for (int j = 0; j < i; j++)
         {
             while (map->data[mobs[i]->coordX][mobs[i]->coordY].value == WATER ||
                    map->data[mobs[i]->coordX][mobs[i]->coordY].value == LAVA ||
                    map->data[mobs[i]->coordX][mobs[i]->coordY].value == NENUPHAR ||
                    map->data[mobs[i]->coordX][mobs[i]->coordY].value == VOID ||
-                   map->data[mobs[i]->coordX][mobs[i]->coordY].value == CHEST || (mobs[i]->coordX == player->coordX && mobs[i]->coordY == player->coordY) || (mobs[i]->coordX == mobs[j]->coordX && mobs[i]->coordY == mobs[j]->coordY))
+                   map->data[mobs[i]->coordX][mobs[i]->coordY].value == CHEST || 
+                   (mobs[i]->coordX == player->coordX && mobs[i]->coordY == player->coordY) || 
+                   (mobs[i]->coordX == mobs[j]->coordX && mobs[i]->coordY == mobs[j]->coordY))
             {
                 mobs[i]->coordX = 1 + (rand() % (map->height - 1));
                 mobs[i]->coordY = 1 + (rand() % (map->width - 1));
             }
         }
-        printf("Mob %d : CoordX : %d, CoordY : %d\n", i, mobs[i]->coordX, mobs[i]->coordY);
     }
 }
 

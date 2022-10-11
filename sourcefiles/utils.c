@@ -551,7 +551,6 @@ int fight(Player *player, Mob *mob, int *nbMobsNotDead)
             {
                 printf("You have successfully attacked the %s.\n", mob->name);
                 attack(player, mob, nbMobsNotDead);
-                printf("%d", mob->isDead);
             }
             else
             {
@@ -633,7 +632,7 @@ int fight(Player *player, Mob *mob, int *nbMobsNotDead)
         printf("Press any key to continue.\n");
         getchar();
     }
-    else if (player->isDead == 1)
+    else if (player->pv <= 0)
     {
         printf("You have been killed by the %s.\n", mob->name);
         printf("Game over.\n");
