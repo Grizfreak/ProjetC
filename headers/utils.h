@@ -19,7 +19,7 @@ typedef struct Enigma
 int displayMenu();
 
 /* Method which initialize a new game */
-int newGame(Player *player, Map *map);
+int newGame(Player *player, Map *map, int size);
 
 /* Method which clear the buffer */
 void clearBuffer();
