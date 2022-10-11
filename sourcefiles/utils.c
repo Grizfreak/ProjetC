@@ -31,12 +31,12 @@ int displayMenu()
     return choice;
 }
 
-int newGame(Player *player, Map *map)
+int newGame(Player *player, Map *map, int size)
 {
     printf("Starting new game...\n");
     initPlayer(player);
 
-    generateMap(map, 20, 20);
+    generateMap(map, size, size);
     generatePlayerCoordinates(player, map);
     return 0;
 }
@@ -724,9 +724,12 @@ int launchgame()
     int moveResult = 2;
     int previousfightResult = 0;
     int fightresult = 0;
+    int mapSize = 20;
     if (result == 1)
     {
-        result = newGame(player, map);
+        printf("Which size do you want for your map ?\n");
+        scanf("%d", &mapSize);
+        result = newGame(player, map, mapSize);
         nbMobsMax = (int)(round((2.5 / 100.0) * (map->height * map->width)));
         *nbMobsNotDead = nbMobsMax;
         mobs = (Mob **)malloc(sizeof(Mob *) * nbMobsMax);
