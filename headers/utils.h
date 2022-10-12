@@ -34,10 +34,6 @@ int loadFile(Map *map, Player *player);
 /* He can go through several directions like NORTH, SOUTH, EAST and WEST */
 char displayActionsMenu();
 
-/* Method which display fight menu to the player */
-/* He can attack the monster, defend himself or use an item from his inventory */
-int displayFightMenu();
-
 int fight(Player *player, Mob *mob, int *nbMobsNotDead);
 
 Enigma *generateEnigma();

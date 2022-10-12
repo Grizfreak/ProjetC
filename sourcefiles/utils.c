@@ -7,7 +7,7 @@ int displayMenu()
     while (1)
     {
         printf("1. Start new game ⚔️\n");
-        printf("2. Continue 🚶‍♂️\n");
+        printf("2. Load a game 🚶‍♂️\n");
         printf("3. Quit ❌\n");
         printf("Your choice: ");
         rtn = scanf("%d", &choice);
@@ -112,11 +112,6 @@ char displayActionsMenu()
         }
     }
     return choice;
-}
-
-int displayFightMenu()
-{
-    return 0;
 }
 
 void clearBuffer()
@@ -351,7 +346,6 @@ void saveFile(Map *map, Player *player, Mob **mobs, int nbMobsMax, int *nbMobsNo
         }
     }
     // size of inventory
-    printf("nbItems: %d\n", nbItems);
     printf("File saved.\n");
     fclose(file);
     printf("Do you want to quit ? (y/n)\n");
@@ -621,16 +615,12 @@ int fight(Player *player, Mob *mob, int *nbMobsNotDead)
         int answer = 0;
         scanf("%d", &choice);
         clearBuffer();
-        Enigma *enigma;
+        Enigma *enigma = generateEnigma();
         switch (choice)
         {
         case 1:
-            enigma = generateEnigma();
             printf("You have to solve this to attack:\n");
-            printf("%d ", enigma->firstNumber);
-            printf("%c ", enigma->operand);
-            printf("%d ", enigma->secondNumber);
-            printf("= ");
+            printf("%d %c %d = ", enigma->firstNumber, enigma->operand, enigma->secondNumber);
             scanf("%d", &answer);
             clearBuffer();
             if (answer == enigma->result)
@@ -645,12 +635,8 @@ int fight(Player *player, Mob *mob, int *nbMobsNotDead)
             free(enigma);
             break;
         case 2:
-            enigma = generateEnigma();
             printf("You have to solve this to defend:\n");
-            printf("%d ", enigma->firstNumber);
-            printf("%c ", enigma->operand);
-            printf("%d ", enigma->secondNumber);
-            printf("= ");
+            printf("%d %c %d = ", enigma->firstNumber, enigma->operand, enigma->secondNumber);
             scanf("%d", &answer);
             clearBuffer();
             if (answer == enigma->result)
@@ -665,12 +651,8 @@ int fight(Player *player, Mob *mob, int *nbMobsNotDead)
             free(enigma);
             break;
         case 3:
-            enigma = generateEnigma();
             printf("You have to solve this to flee:\n");
-            printf("%d ", enigma->firstNumber);
-            printf("%c ", enigma->operand);
-            printf("%d ", enigma->secondNumber);
-            printf("= ");
+            printf("%d %c %d = ", enigma->firstNumber, enigma->operand, enigma->secondNumber);
             scanf("%d", &answer);
             clearBuffer();
             if (answer == enigma->result)
@@ -948,11 +930,11 @@ void openPlayerMenu(Player *player, Map *map, Mob **mobs, int nbMobsMax, int *nb
         printf("⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣀⣀⣀⣀⣀⣀⣀⣀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n");
         printf("⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⠉⠉⠉⠉⠉⠉⠉⠉⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n");
         printf("⠀⠀⠀⠀⠀⣾⠀⣿⣿⡿⠿⠿⠿⠿⠿⠿⠿⠿⠿⠿⢿⣿⣿⠀⢷⠀⠀⠀⠀⠀\n");
-        printf("⠀⠀⠀⠀⢰⡏⠀⣿⣿⠀⣴⣶⣶⣶⣶⣶⣶⣶⣶⣦⠀⣿⣿⡀⢸⡆⠀⠀⠀⠀                                     Name : %s\n", player->name);
-        printf("⠀⠀⠀⠀⢸⡇⠀⣿⣿⣆⠘⠻⠇⢠⣤⣤⡄⠸⠟⠋⣠⣿⣿⡇⢸⡇⠀⠀⠀⠀                                     pv :  %d\n", player->pv);
-        printf("⠀⠀⠀⠀⢸⣇⠀⣿⣿⣿⣿⣶⣆⣈⣉⣉⣁⣰⣶⣿⣿⣿⣿⠃⢸⡇⠀⠀⠀⠀                                     attack : %d\n", player->attack);
-        printf("⠀⠀⠀⠀⠈⣿⣀⣉⣉⠉⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠉⣉⣉⣀⣿⠀⠀⠀⠀⠀                                     XP :  %d\n", player->currentXp);
-        printf("⠀⠀⢀⡴⠀⣉⣉⠉⠉⠉⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠉⠉⠉⣉⣉⠀⢦⡀⠀⠀                                     emoji : %s\n", player->emoji);
+        printf("⠀⠀⠀⠀⢰⡏⠀⣿⣿⠀⣴⣶⣶⣶⣶⣶⣶⣶⣶⣦⠀⣿⣿⡀⢸⡆⠀⠀⠀⠀                                Name : %s\n", player->name);
+        printf("⠀⠀⠀⠀⢸⡇⠀⣿⣿⣆⠘⠻⠇⢠⣤⣤⡄⠸⠟⠋⣠⣿⣿⡇⢸⡇⠀⠀⠀⠀                                pv :  %d\n", player->pv);
+        printf("⠀⠀⠀⠀⢸⣇⠀⣿⣿⣿⣿⣶⣆⣈⣉⣉⣁⣰⣶⣿⣿⣿⣿⠃⢸⡇⠀⠀⠀⠀                                attack : %d\n", player->attack);
+        printf("⠀⠀⠀⠀⠈⣿⣀⣉⣉⠉⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠉⣉⣉⣀⣿⠀⠀⠀⠀⠀                                XP :  %d\n", player->currentXp);
+        printf("⠀⠀⢀⡴⠀⣉⣉⠉⠉⠉⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠉⠉⠉⣉⣉⠀⢦⡀⠀⠀                                emoji : %s\n", player->emoji);
         printf("⠀⠀⠈⣀⠀⣿⣿⠀⣿⣿⠀⠛⠛⠉⠉⠉⠉⠛⠛⠀⣿⣿⠀⣿⣿⠀⣀⠁⠀⠀\n");
         printf("⠀⠀⢸⡇⢀⣿⣿⠀⣿⣿⠀⣿⣿⣿⣿⣿⣿⣿⣿⠀⣿⣿⠀⣿⣿⡀⢸⡇⠀⠀\n");
         printf("⠀⠀⢸⡇⢸⣿⠀⣤⡤⢤⣄⠘⠻⠿⠿⠿⠿⠟⠃⣠⡤⢤⣤⠀⣿⡇⢸⡇⠀⠀\n");
