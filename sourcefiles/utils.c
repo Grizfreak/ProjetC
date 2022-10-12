@@ -748,7 +748,7 @@ int fight(Player *player, Mob *mob, int *nbMobsNotDead)
         }
         checkXp(player);
         printf("You have killed the %s.\n", mob->name);
-        printf("Press any key to continue.\n");
+        printf("Press any key to continue and press enter.\n");
         getchar();
     }
     else if (player->pv <= 0)
@@ -760,7 +760,7 @@ int fight(Player *player, Mob *mob, int *nbMobsNotDead)
     else if (hasFlee)
     {
         printf("You have successfully fled from the %s.\n", mob->name);
-        printf("Press any key to continue.\n");
+        printf("Press any key to continue and press enter.\n");
         getchar();
         return 2;
     }
