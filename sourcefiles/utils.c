@@ -42,6 +42,7 @@ int displayMenu()
 
 int newGame(Player *player, Map *map)
 {
+    // TODO
     printf("Starting new game...\n");
     initPlayer(player);
     int mapSize = 20;
@@ -343,7 +344,7 @@ void saveFile(Map *map, Player *player, Mob **mobs, int nbMobsMax, int *nbMobsNo
                 printf("Error while writing inventory in file.\n");
                 return;
             }
-            int size = strlen(player->inventory[i]->name);
+            int size = 0;
             if (fwrite(&size, sizeof(int), 1, file) != 1)
             {
                 printf("Error while writing inventory in file.\n");
