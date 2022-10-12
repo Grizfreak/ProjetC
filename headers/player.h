@@ -21,12 +21,12 @@
 typedef struct Player
 {
     char name[32];
+    char *emoji;
     int coordX;
     int coordY;
     int pv;
     int attack;
     int currentXp;
-    int XpUntilLeveling;
     int state;
     int isDead;
     Item *inventory[10];
