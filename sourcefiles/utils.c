@@ -808,6 +808,7 @@ Enigma *generateEnigma()
 
 int launchgame()
 {
+    signal(SIGINT, trtSigInt);
     Map *map = (Map *)malloc(sizeof(Map));
     Player *player = (Player *)malloc(sizeof(Player));
     items = initItems();
@@ -818,7 +819,6 @@ int launchgame()
     int moveResult = 2;
     int previousfightResult = 0;
     int fightresult = 0;
-    signal(SIGINT, trtSigInt);
     if (result == 1)
     {
         result = newGame(player, map);
