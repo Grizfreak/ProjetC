@@ -1,9 +1,10 @@
 #include "../headers/item.h"
 #include <time.h>
 
-/* Function that generate a random item among list passed as parameter*/
+/* Function that generate a random item among the list passed as parameter*/
 Item *generateRandomItem(Item **items)
 {
+    /* Generate a random index and return the item at this index */
     int randItem = rand() % TOTAL_NUMBER_OF_ITEMS;
     return items[randItem];
 }
@@ -263,7 +264,7 @@ Item **initItems()
     return listOfitems;
 }
 
-/* Function that free memory by freeing all item inside the list of items */
+/* Function that free memory by freeing all items inside the list of items */
 void freeItems(Item **items)
 {
     /* First we free item by item inside the list */
