@@ -1,5 +1,14 @@
 #include "../headers/utils.h"
 
+Item **items;
+jmp_buf returnenv;
+
+void trtSigInt(int sig)
+{
+    siglongjmp(returnenv, 1);
+    signal(SIGINT, trtSigInt);
+}
+
 int displayMenu()
 {
     int choice;
@@ -796,8 +805,6 @@ Enigma *generateEnigma()
     return enigma;
 }
 
-Item **items;
-
 int launchgame()
 {
     Map *map = (Map *)malloc(sizeof(Map));
@@ -810,6 +817,7 @@ int launchgame()
     int moveResult = 2;
     int previousfightResult = 0;
     int fightresult = 0;
+    signal(SIGINT, trtSigInt);
     if (result == 1)
     {
         result = newGame(player, map);
@@ -839,6 +847,11 @@ int launchgame()
 
     while (isPlayerAlive(player, map))
     {
+        if (sigsetjmp(returnenv, 1))
+        {
+            freeEverything(map, player, mobs, nbMobsMax, nbMobsNotDead);
+            return 0;
+        }
         switch (displayActionsMenu())
         {
         case 'z':

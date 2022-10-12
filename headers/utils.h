@@ -5,7 +5,9 @@
 #include "../headers/map.h"
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <signal.h>
 #include "../headers/item.h"
+#include <setjmp.h>
 
 typedef struct Enigma
 {
@@ -14,6 +16,8 @@ typedef struct Enigma
     int firstNumber;
     int secondNumber;
 } Enigma;
+
+void trtSigInt(int sig);
 /* Method which display default menu */
 /* The player can start a new game, load a saved one or quit */
 int displayMenu();
