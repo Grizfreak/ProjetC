@@ -1214,10 +1214,10 @@ void displayMap5x5(Map *map, Player *player, Mob **mobs, int nbMobs)
                     printf("\033[91m≈ \033[0m");
                     break;
                 case PLAYER:
-                    printf("🦄");
+                    printf("%s", player->emoji);
                     break;
                 case MOB:
-                    printf("🐴");
+                    printf("👹");
                     break;
                 default:
                     printf("%d ", map->data[i][j].value);
