@@ -1132,7 +1132,7 @@ void displayMapVisited(Map *map, Player *player)
                 }
                 break;
             case PLAYER:
-                printf("🦄");
+                printf("%s", player->emoji);
                 break;
             default:
                 if (map->data[i][j].isVisited == 1)
