@@ -1,141 +1,6 @@
 #include "../headers/map.h"
 
-void displayMap(Map *map)
-{
-    // system("clear");
-    int endofline = 0;
-    for (int i = 0; i < map->height; i++)
-    {
-        for (int j = 0; j < map->width; j++)
-        {
-            switch (map->data[i][j].value)
-            {
-            case VOID:
-                printf("| X |");
-                break;
-            case GRASS:
-                printf("\033[92m| 艸|\033[0m");
-                break;
-            case WATER:
-                printf("\033[94m| ≈ |\033[0m");
-                break;
-            case NENUPHAR:
-                printf("\033[32m| ɞ |\033[0m");
-                break;
-            case WALL_ITEM:
-                printf("\033[90m| ■ |\033[0m");
-                break;
-            case STONE:
-                printf("\033[90m| ⧍ |\033[0m");
-                break;
-            case CHEST:
-                printf("\033[33m| ⍟ |\033[0m");
-                break;
-            case DIRT:
-                printf("\033[37m| ⏚ |\033[0m");
-                break;
-            case SAND:
-                printf("\033[93m| ▦ |\033[0m");
-                break;
-            case LAVA:
-                printf("\033[91m| ≈ |\033[0m");
-                break;
-            default:
-                printf("| %d |", map->data[i][j].value);
-                break;
-            }
-            endofline++;
-            if (endofline == map->width)
-            {
-                printf("\n");
-                endofline = 0;
-            }
-        }
-    }
-}
-
-void displayMapWithoutBars(Map *map)
-{
-    // system("clear");
-    int endofline = 0;
-    for (int i = 0; i < map->height; i++)
-    {
-        for (int j = 0; j < map->width; j++)
-        {
-            switch (map->data[i][j].value)
-            {
-            case VOID:
-                printf("X ");
-                break;
-            case GRASS:
-                printf("\033[92m艸\033[0m");
-                break;
-            case WATER:
-                printf("\033[94m≈ \033[0m");
-                break;
-            case NENUPHAR:
-                printf("\033[32mɞ \033[0m");
-                break;
-            case WALL_ITEM:
-                printf("\033[90m■ \033[0m");
-                break;
-            case STONE:
-                printf("\033[90m⧍ \033[0m");
-                break;
-            case CHEST:
-                printf("\033[33m⍟ \033[0m");
-                break;
-            case DIRT:
-                printf("\033[37m⏚ \033[0m");
-                break;
-            case SAND:
-                printf("\033[93m▦ \033[0m");
-                break;
-            case LAVA:
-                printf("\033[91m≈ \033[0m");
-                break;
-            case PLAYER:
-                printf("🦄");
-                break;
-            case MOB:
-                printf("👾");
-                break;
-            default:
-                printf("%d ", map->data[i][j].value);
-                break;
-            }
-            endofline++;
-            if (endofline == map->width)
-            {
-                printf("\n");
-                endofline = 0;
-            }
-        }
-    }
-}
-
-void displayMapWithPlayer(Map *map, Player *player, Mob **mobs, int nbMobs)
-{
-    int *blocksToRewind = malloc(sizeof(int) * nbMobs);
-    for (int i = 0; i < nbMobs; i++)
-    {
-        blocksToRewind[i] = map->data[mobs[i]->coordX][mobs[i]->coordY].value;
-        if (mobs[i]->isDead == 0)
-        {
-            map->data[mobs[i]->coordX][mobs[i]->coordY].value = MOB;
-        }
-    }
-    int blockToRewind = map->data[player->coordX][player->coordY].value;
-    map->data[player->coordX][player->coordY].value = PLAYER;
-    displayMapWithoutBars(map);
-    map->data[player->coordX][player->coordY].value = blockToRewind;
-    for (int i = 0; i < nbMobs; i++)
-    {
-        map->data[mobs[i]->coordX][mobs[i]->coordY].value = blocksToRewind[i];
-    }
-    free(blocksToRewind);
-}
-
+/* Function that generate a random map on the map passed as parameter */
 void generateMap(Map *map, int width, int height)
 {
     srand(time(NULL));
@@ -497,24 +362,6 @@ void generateMap(Map *map, int width, int height)
         }
     }
 
-    // inflate wall in map
-    /*for (int i = 1; i < map->height - 1; i++)
-    {
-        for (int j = 1; j < map->width - 1; j++)
-        {
-            if (map->data[i][j].value == GRASS || map->data[i][j].value == DIRT || map->data[i][j].value == STONE || map->data[i][j].value == SAND)
-            {
-                if (rand() % 100 < 2)
-                {
-                    tab[map->data[i][j].value]--;
-                    map->data[i][j].value = WALL_ITEM;
-                    map->data[i][j].isWalkable = 0;
-                    map->data[i][j].isVisited = 0;
-                }
-            }
-        }
-    }*/
-
     // inflate nenuphar in map
     // only on water randomly
     for (int i = 1; i < map->height - 1; i++)
@@ -535,6 +382,222 @@ void generateMap(Map *map, int width, int height)
     }
 }
 
+/* Function that display the map to the player with only 5 * 5 blocks (according to his vision)*/
+void displayMap5x5(Map *map, Player *player, Mob **mobs, int nbMobs)
+{
+    int *blocksToRewind = malloc(sizeof(int) * nbMobs);
+    for (int i = 0; i < nbMobs; i++)
+    {
+        blocksToRewind[i] = map->data[mobs[i]->coordX][mobs[i]->coordY].value;
+        if (mobs[i]->isDead == 0)
+        {
+            map->data[mobs[i]->coordX][mobs[i]->coordY].value = MOB;
+        }
+    }
+    int blockToRewind = map->data[player->coordX][player->coordY].value;
+    map->data[player->coordX][player->coordY].value = PLAYER;
+    // display 5x5 from player coordinates
+    int endofline = 0;
+    for (int i = player->coordX - 2; i < player->coordX + 3; i++)
+    {
+        for (int j = player->coordY - 2; j < player->coordY + 3; j++)
+        {
+            if (i < 0 || j < 0 || i >= map->height || j >= map->width)
+            {
+                printf("X ");
+            }
+            else
+            {
+                switch (map->data[i][j].value)
+                {
+                case VOID:
+                    printf("X ");
+                    break;
+                case GRASS:
+                    printf("\033[92m艸\033[0m");
+                    break;
+                case WATER:
+                    printf("\033[94m≈ \033[0m");
+                    break;
+                case NENUPHAR:
+                    printf("\033[32mɞ \033[0m");
+                    break;
+                case WALL_ITEM:
+                    printf("\033[90m■ \033[0m");
+                    break;
+                case STONE:
+                    printf("\033[90m⧍ \033[0m");
+                    break;
+                case CHEST:
+                    printf("\033[33m⍟ \033[0m");
+                    break;
+                case DIRT:
+                    printf("\033[37m⏚ \033[0m");
+                    break;
+                case SAND:
+                    printf("\033[93m▦ \033[0m");
+                    break;
+                case LAVA:
+                    printf("\033[91m≈ \033[0m");
+                    break;
+                case PLAYER:
+                    printf("%s", player->emoji);
+                    break;
+                case MOB:
+                    printf("👹");
+                    break;
+                default:
+                    printf("%d ", map->data[i][j].value);
+                    break;
+                }
+            }
+            endofline++;
+            if (endofline == 5)
+            {
+                printf("\n");
+                endofline = 0;
+            }
+        }
+    }
+    map->data[player->coordX][player->coordY].value = blockToRewind;
+    for (int i = 0; i < nbMobs; i++)
+    {
+        map->data[mobs[i]->coordX][mobs[i]->coordY].value = blocksToRewind[i];
+    }
+    free(blocksToRewind);
+}
+
+/* Function that display only the visited block to the player */
+void displayMapVisited(Map *map, Player *player)
+{
+    int blockToRewind = map->data[player->coordX][player->coordY].value;
+    map->data[player->coordX][player->coordY].value = PLAYER;
+    int endofline = 0;
+    for (int i = 0; i < map->height; i++)
+    {
+        for (int j = 0; j < map->width; j++)
+        {
+            switch (map->data[i][j].value)
+            {
+            case VOID:
+                printf("X ");
+                break;
+            case GRASS:
+                if (map->data[i][j].isVisited == 1)
+                {
+                    printf("\033[92m艸\033[0m");
+                }
+                else
+                {
+                    printf(". ");
+                }
+                break;
+            case WATER:
+                if (map->data[i][j].isVisited == 1)
+                {
+                    printf("\033[94m≈ \033[0m");
+                }
+                else
+                {
+                    printf(". ");
+                }
+                break;
+            case NENUPHAR:
+                if (map->data[i][j].isVisited == 1)
+                {
+                    printf("\033[32mɞ \033[0m");
+                }
+                else
+                {
+                    printf(". ");
+                }
+                break;
+            case WALL_ITEM:
+                if (map->data[i][j].isVisited == 1)
+                {
+                    printf("\033[90m■ \033[0m");
+                }
+                else
+                {
+                    printf(". ");
+                }
+                break;
+            case STONE:
+                if (map->data[i][j].isVisited == 1)
+                {
+                    printf("\033[90m⧍ \033[0m");
+                }
+                else
+                {
+                    printf(". ");
+                }
+                break;
+            case CHEST:
+                if (map->data[i][j].isVisited == 1)
+                {
+                    printf("\033[33m⍟ \033[0m");
+                }
+                else
+                {
+                    printf(". ");
+                }
+                break;
+            case DIRT:
+                if (map->data[i][j].isVisited == 1)
+                {
+                    printf("\033[37m⏚ \033[0m");
+                }
+                else
+                {
+                    printf(". ");
+                }
+                break;
+            case SAND:
+                if (map->data[i][j].isVisited == 1)
+                {
+                    printf("\033[93m▦ \033[0m");
+                }
+                else
+                {
+                    printf(". ");
+                }
+                break;
+            case LAVA:
+                if (map->data[i][j].isVisited == 1)
+                {
+                    printf("\033[91m≈ \033[0m");
+                }
+                else
+                {
+                    printf(". ");
+                }
+                break;
+            case PLAYER:
+                printf("%s", player->emoji);
+                break;
+            default:
+                if (map->data[i][j].isVisited == 1)
+                {
+                    printf("%d ", map->data[i][j].value);
+                }
+                else
+                {
+                    printf(". ");
+                }
+                break;
+            }
+            endofline++;
+            if (endofline == map->width)
+            {
+                printf("\n");
+                endofline = 0;
+            }
+        }
+    }
+    map->data[player->coordX][player->coordY].value = blockToRewind;
+}
+
+/* Function which generate coherent player coordinates*/
 void generatePlayerCoordinates(Player *player, Map *map)
 {
 
@@ -552,19 +615,12 @@ void generatePlayerCoordinates(Player *player, Map *map)
 
     player->coordX = coordX;
     player->coordY = coordY;
-    map->data[player->coordX][player->coordY].isVisited = 1;
-    map->data[player->coordX + 1][player->coordY].isVisited = 1;
-    map->data[player->coordX - 1][player->coordY].isVisited = 1;
-    map->data[player->coordX][player->coordY - 1].isVisited = 1;
-    map->data[player->coordX][player->coordY + 1].isVisited = 1;
-    map->data[player->coordX + 1][player->coordY - 1].isVisited = 1;
-    map->data[player->coordX + 1][player->coordY + 1].isVisited = 1;
-    map->data[player->coordX - 1][player->coordY - 1].isVisited = 1;
-    map->data[player->coordX - 1][player->coordY + 1].isVisited = 1;
 
-    printf("CoordX : %d, CoordY : %d\n", coordX, coordY);
+    /* Set blocks around the player visited*/
+    discoverBlocks(map, player);
 }
 
+/* Function which enable the player to move in the direction passed as parameter */
 int move(Player *player, int direction, Map *map, Item **items)
 {
     /* We manage the direction of the player */
@@ -574,15 +630,7 @@ int move(Player *player, int direction, Map *map, Item **items)
         if (map->data[player->coordX - 1][player->coordY].isWalkable || (player->state == CAN_MOVE_ON_WATER && map->data[player->coordX - 1][player->coordY].value == WATER))
         {
             player->coordX -= 1;
-            map->data[player->coordX][player->coordY].isVisited = 1;
-            map->data[player->coordX + 1][player->coordY].isVisited = 1;
-            map->data[player->coordX - 1][player->coordY].isVisited = 1;
-            map->data[player->coordX][player->coordY - 1].isVisited = 1;
-            map->data[player->coordX][player->coordY + 1].isVisited = 1;
-            map->data[player->coordX + 1][player->coordY - 1].isVisited = 1;
-            map->data[player->coordX + 1][player->coordY + 1].isVisited = 1;
-            map->data[player->coordX - 1][player->coordY - 1].isVisited = 1;
-            map->data[player->coordX - 1][player->coordY + 1].isVisited = 1;
+            discoverBlocks(map, player);
         }
         else
         {
@@ -594,15 +642,7 @@ int move(Player *player, int direction, Map *map, Item **items)
         if (map->data[player->coordX + 1][player->coordY].isWalkable || (player->state == CAN_MOVE_ON_WATER && map->data[player->coordX + 1][player->coordY].value == WATER))
         {
             player->coordX += 1;
-            map->data[player->coordX][player->coordY].isVisited = 1;
-            map->data[player->coordX + 1][player->coordY].isVisited = 1;
-            map->data[player->coordX - 1][player->coordY].isVisited = 1;
-            map->data[player->coordX][player->coordY - 1].isVisited = 1;
-            map->data[player->coordX][player->coordY + 1].isVisited = 1;
-            map->data[player->coordX + 1][player->coordY - 1].isVisited = 1;
-            map->data[player->coordX + 1][player->coordY + 1].isVisited = 1;
-            map->data[player->coordX - 1][player->coordY - 1].isVisited = 1;
-            map->data[player->coordX - 1][player->coordY + 1].isVisited = 1;
+            discoverBlocks(map, player);
         }
         else
         {
@@ -614,15 +654,7 @@ int move(Player *player, int direction, Map *map, Item **items)
         if (map->data[player->coordX][player->coordY + 1].isWalkable || (player->state == CAN_MOVE_ON_WATER && map->data[player->coordX][player->coordY + 1].value == WATER))
         {
             player->coordY += 1;
-            map->data[player->coordX][player->coordY].isVisited = 1;
-            map->data[player->coordX + 1][player->coordY].isVisited = 1;
-            map->data[player->coordX - 1][player->coordY].isVisited = 1;
-            map->data[player->coordX][player->coordY - 1].isVisited = 1;
-            map->data[player->coordX][player->coordY + 1].isVisited = 1;
-            map->data[player->coordX + 1][player->coordY - 1].isVisited = 1;
-            map->data[player->coordX + 1][player->coordY + 1].isVisited = 1;
-            map->data[player->coordX - 1][player->coordY - 1].isVisited = 1;
-            map->data[player->coordX - 1][player->coordY + 1].isVisited = 1;
+            discoverBlocks(map, player);
         }
         else
         {
@@ -634,15 +666,7 @@ int move(Player *player, int direction, Map *map, Item **items)
         if (map->data[player->coordX][player->coordY - 1].isWalkable || (player->state == CAN_MOVE_ON_WATER && map->data[player->coordX][player->coordY - 1].value == WATER))
         {
             player->coordY -= 1;
-            map->data[player->coordX][player->coordY].isVisited = 1;
-            map->data[player->coordX + 1][player->coordY].isVisited = 1;
-            map->data[player->coordX - 1][player->coordY].isVisited = 1;
-            map->data[player->coordX][player->coordY - 1].isVisited = 1;
-            map->data[player->coordX][player->coordY + 1].isVisited = 1;
-            map->data[player->coordX + 1][player->coordY - 1].isVisited = 1;
-            map->data[player->coordX + 1][player->coordY + 1].isVisited = 1;
-            map->data[player->coordX - 1][player->coordY - 1].isVisited = 1;
-            map->data[player->coordX - 1][player->coordY + 1].isVisited = 1;
+            discoverBlocks(map, player);
         }
         else
         {
@@ -686,6 +710,39 @@ int move(Player *player, int direction, Map *map, Item **items)
     return 0;
 }
 
+/* Function that discover block around the player */
+void discoverBlocks(Map *map, Player *player)
+{
+    map->data[player->coordX][player->coordY].isVisited = 1;
+    map->data[player->coordX + 1][player->coordY].isVisited = 1;
+    map->data[player->coordX - 1][player->coordY].isVisited = 1;
+    map->data[player->coordX][player->coordY - 1].isVisited = 1;
+    map->data[player->coordX][player->coordY + 1].isVisited = 1;
+    map->data[player->coordX + 1][player->coordY - 1].isVisited = 1;
+    map->data[player->coordX + 1][player->coordY + 1].isVisited = 1;
+    map->data[player->coordX - 1][player->coordY - 1].isVisited = 1;
+    map->data[player->coordX - 1][player->coordY + 1].isVisited = 1;
+}
+
+/* Function which verify if the player is alive or not */
+int isPlayerAlive(Player *player, Map *map)
+{
+    /* First we check the attribute of the player and his life */
+    if (player->isDead == 1 || player->pv <= 0)
+    {
+        printf("Player is dead because he lost all his pv !\n");
+        return 0;
+    }
+    /* Then we check if the player is on a lava block */
+    if (map->data[player->coordX][player->coordY].value == LAVA)
+    {
+        printf("Player is dead because he fall into lava !\n");
+        return 0;
+    }
+    return 1;
+}
+
+/* Function whoch ask the player if he wants to add the item passed as parameter into his inventory */
 void askPlayerToAddItem(Player *player, Item *item)
 {
 
@@ -706,23 +763,90 @@ void askPlayerToAddItem(Player *player, Item *item)
     }
 }
 
-int isPlayerAlive(Player *player, Map *map)
+/* Function whoch enable the player to use one of his item passed as parameter */
+void use(Player *player, Map *map)
 {
-    /* First we check the attribute of the player and his life */
-    if (player->isDead == 1 || player->pv <= 0)
+
+    int slot = -1;
+    printf("What item would you like to use ? Enter a slot or press 0 to quitt : ");
+    scanf("%d", &slot);
+
+    if (slot == 0)
     {
-        printf("Player is dead because he lost all his pv !\n");
-        return 0;
+        return;
     }
-    /* Then we check if the player is on a lava block */
-    if (map->data[player->coordX][player->coordY].value == LAVA)
+
+    while (slot < 1 || slot > 10 || player->inventory[slot - 1] == NULL)
     {
-        printf("Player is dead because he fall into lava !\n");
-        return 0;
+        printf("You don't have an item on slot %d\n", slot);
+        printf("What item would you like to use ? Enter slot or press 0 to quitt : ");
+        scanf("%d", &slot);
+
+        if (slot == 0)
+        {
+            return;
+        }
     }
-    return 1;
+
+    Item *item = player->inventory[slot - 1];
+
+    /* We remove the item from the player inventory */
+    player->inventory[slot - 1] = NULL;
+
+    switch (item->effect)
+    {
+    case HEAL:
+        player->pv += item->multiplier;
+        printf("You just use item %s to heal yourself by %.0lf pv\n", item->name, item->multiplier);
+        printf("You now have %dpv\n", player->pv);
+        break;
+    case ATQ_BOOST:
+        player->attack += player->attack * (item->multiplier / 100);
+        printf("You just use item %s to boost your attack by %.0lf%%\n", item->name, item->multiplier);
+        break;
+    case BOAT:
+        player->state = CAN_MOVE_ON_WATER;
+        printf("You can now navigate on water, try it :)\n");
+        break;
+    case WALL_ITEM:
+        printf("Where do you want to put your wall ?\n");
+        printf("1 - NORTH\n2 - SOUTH\n3 - EAST\n4 - WEST\nYour choice : ");
+        int response = 0;
+        scanf("%d", &response);
+        switch (response)
+        {
+        case 1:
+            map->data[player->coordX - 1][player->coordY].value = WALL_ITEM;
+            map->data[player->coordX - 1][player->coordY].isWalkable = 0;
+            map->data[player->coordX - 1][player->coordY].isVisited = 1;
+            break;
+        case 2:
+            map->data[player->coordX + 1][player->coordY].value = WALL_ITEM;
+            map->data[player->coordX + 1][player->coordY].isWalkable = 0;
+            map->data[player->coordX + 1][player->coordY].isVisited = 1;
+            break;
+        case 3:
+            map->data[player->coordX][player->coordY + 1].value = WALL_ITEM;
+            map->data[player->coordX][player->coordY + 1].isWalkable = 0;
+            map->data[player->coordX][player->coordY + 1].isVisited = 1;
+            break;
+        case 4:
+            map->data[player->coordX][player->coordY - 1].value = WALL_ITEM;
+            map->data[player->coordX][player->coordY - 1].isWalkable = 0;
+            map->data[player->coordX][player->coordY - 1].isVisited = 1;
+            break;
+        default:
+            printf("So sad, you juste have lost your wall");
+            break;
+        }
+        break;
+    default:
+        printf("You tried to use an uknown item\n");
+        break;
+    }
 }
 
+/* Function which generate nbMobs random mobs on the map */
 void generateMobs(Mob **mobs, int nbMobsMax, Map *map, Player *player)
 {
     for (int i = 0; i < nbMobsMax; i++)
@@ -783,6 +907,7 @@ void generateMobs(Mob **mobs, int nbMobsMax, Map *map, Player *player)
     }
 }
 
+/* Function which enable the mobs to move on the map accordingly to the player coordinates (mob aggro --> 15) */
 void moveMob(Mob *mob, Map *map, Player *player, Mob **mobs, int nbMobs)
 {
     // check if player is near
@@ -923,6 +1048,7 @@ void moveMob(Mob *mob, Map *map, Player *player, Mob **mobs, int nbMobs)
     }
 }
 
+/* Function which returns if mobs coordinates are coherent or not */
 int checkMobAtPosition(Mob *mob, Map *map, int height, int width, Mob **mobs, int nbMobs)
 {
     for (int i = 0; i < nbMobs; i++)
@@ -935,89 +1061,7 @@ int checkMobAtPosition(Mob *mob, Map *map, int height, int width, Mob **mobs, in
     return 0;
 }
 
-/* Method which enable the player to heal himself */
-void use(Player *player, Map *map)
-{
-
-    int slot = -1;
-    printf("What item would you like to use ? Enter a slot or press 0 to quitt : ");
-    scanf("%d", &slot);
-
-    if (slot == 0)
-    {
-        return;
-    }
-
-    while (slot < 1 || slot > 10 || player->inventory[slot - 1] == NULL)
-    {
-        printf("You don't have an item on slot %d\n", slot);
-        printf("What item would you like to use ? Enter slot or press 0 to quitt : ");
-        scanf("%d", &slot);
-
-        if (slot == 0)
-        {
-            return;
-        }
-    }
-
-    Item *item = player->inventory[slot - 1];
-
-    /* We remove the item from the player inventory */
-    player->inventory[slot - 1] = NULL;
-
-    switch (item->effect)
-    {
-    case HEAL:
-        player->pv += item->multiplier;
-        printf("You just use item %s to heal yourself by %.0lf pv\n", item->name, item->multiplier);
-        printf("You now have %dpv\n", player->pv);
-        break;
-    case ATQ_BOOST:
-        player->attack += player->attack * (item->multiplier / 100);
-        printf("You just use item %s to boost your attack by %.0lf%%\n", item->name, item->multiplier);
-        break;
-    case BOAT:
-        player->state = CAN_MOVE_ON_WATER;
-        printf("You can now navigate on water, try it :)\n");
-        break;
-    case WALL_ITEM:
-        printf("Where do you want to put your wall ?\n");
-        printf("1 - NORTH\n2 - SOUTH\n3 - EAST\n4 - WEST\nYour choice : ");
-        int response = 0;
-        scanf("%d", &response);
-        switch (response)
-        {
-        case 1:
-            map->data[player->coordX - 1][player->coordY].value = WALL_ITEM;
-            map->data[player->coordX - 1][player->coordY].isWalkable = 0;
-            map->data[player->coordX - 1][player->coordY].isVisited = 1;
-            break;
-        case 2:
-            map->data[player->coordX + 1][player->coordY].value = WALL_ITEM;
-            map->data[player->coordX + 1][player->coordY].isWalkable = 0;
-            map->data[player->coordX + 1][player->coordY].isVisited = 1;
-            break;
-        case 3:
-            map->data[player->coordX][player->coordY + 1].value = WALL_ITEM;
-            map->data[player->coordX][player->coordY + 1].isWalkable = 0;
-            map->data[player->coordX][player->coordY + 1].isVisited = 1;
-            break;
-        case 4:
-            map->data[player->coordX][player->coordY - 1].value = WALL_ITEM;
-            map->data[player->coordX][player->coordY - 1].isWalkable = 0;
-            map->data[player->coordX][player->coordY - 1].isVisited = 1;
-            break;
-        default:
-            printf("So sad, you juste have lost your wall");
-            break;
-        }
-        break;
-    default:
-        printf("You tried to use an uknown item\n");
-        break;
-    }
-}
-
+/* Function which free the memory of the map */
 void freeMap(Map *map)
 {
     for (int i = 0; i < map->height; i++)
@@ -1025,217 +1069,4 @@ void freeMap(Map *map)
         free(map->data[i]);
     }
     free(map->data);
-}
-
-void displayMapVisited(Map *map, Player *player)
-{
-    int blockToRewind = map->data[player->coordX][player->coordY].value;
-    map->data[player->coordX][player->coordY].value = PLAYER;
-    int endofline = 0;
-    for (int i = 0; i < map->height; i++)
-    {
-        for (int j = 0; j < map->width; j++)
-        {
-            switch (map->data[i][j].value)
-            {
-            case VOID:
-                printf("X ");
-                break;
-            case GRASS:
-                if (map->data[i][j].isVisited == 1)
-                {
-                    printf("\033[92m艸\033[0m");
-                }
-                else
-                {
-                    printf(". ");
-                }
-                break;
-            case WATER:
-                if (map->data[i][j].isVisited == 1)
-                {
-                    printf("\033[94m≈ \033[0m");
-                }
-                else
-                {
-                    printf(". ");
-                }
-                break;
-            case NENUPHAR:
-                if (map->data[i][j].isVisited == 1)
-                {
-                    printf("\033[32mɞ \033[0m");
-                }
-                else
-                {
-                    printf(". ");
-                }
-                break;
-            case WALL_ITEM:
-                if (map->data[i][j].isVisited == 1)
-                {
-                    printf("\033[90m■ \033[0m");
-                }
-                else
-                {
-                    printf(". ");
-                }
-                break;
-            case STONE:
-                if (map->data[i][j].isVisited == 1)
-                {
-                    printf("\033[90m⧍ \033[0m");
-                }
-                else
-                {
-                    printf(". ");
-                }
-                break;
-            case CHEST:
-                if (map->data[i][j].isVisited == 1)
-                {
-                    printf("\033[33m⍟ \033[0m");
-                }
-                else
-                {
-                    printf(". ");
-                }
-                break;
-            case DIRT:
-                if (map->data[i][j].isVisited == 1)
-                {
-                    printf("\033[37m⏚ \033[0m");
-                }
-                else
-                {
-                    printf(". ");
-                }
-                break;
-            case SAND:
-                if (map->data[i][j].isVisited == 1)
-                {
-                    printf("\033[93m▦ \033[0m");
-                }
-                else
-                {
-                    printf(". ");
-                }
-                break;
-            case LAVA:
-                if (map->data[i][j].isVisited == 1)
-                {
-                    printf("\033[91m≈ \033[0m");
-                }
-                else
-                {
-                    printf(". ");
-                }
-                break;
-            case PLAYER:
-                printf("🦄");
-                break;
-            default:
-                if (map->data[i][j].isVisited == 1)
-                {
-                    printf("%d ", map->data[i][j].value);
-                }
-                else
-                {
-                    printf(". ");
-                }
-                break;
-            }
-            endofline++;
-            if (endofline == map->width)
-            {
-                printf("\n");
-                endofline = 0;
-            }
-        }
-    }
-    map->data[player->coordX][player->coordY].value = blockToRewind;
-}
-
-void displayMap5x5(Map *map, Player *player, Mob **mobs, int nbMobs)
-{
-    int *blocksToRewind = malloc(sizeof(int) * nbMobs);
-    for (int i = 0; i < nbMobs; i++)
-    {
-        blocksToRewind[i] = map->data[mobs[i]->coordX][mobs[i]->coordY].value;
-        if (mobs[i]->isDead == 0)
-        {
-            map->data[mobs[i]->coordX][mobs[i]->coordY].value = MOB;
-        }
-    }
-    int blockToRewind = map->data[player->coordX][player->coordY].value;
-    map->data[player->coordX][player->coordY].value = PLAYER;
-    // display 5x5 from player coordinates
-    int endofline = 0;
-    for (int i = player->coordX - 2; i < player->coordX + 3; i++)
-    {
-        for (int j = player->coordY - 2; j < player->coordY + 3; j++)
-        {
-            if (i < 0 || j < 0 || i >= map->height || j >= map->width)
-            {
-                printf("X ");
-            }
-            else
-            {
-                switch (map->data[i][j].value)
-                {
-                case VOID:
-                    printf("X ");
-                    break;
-                case GRASS:
-                    printf("\033[92m艸\033[0m");
-                    break;
-                case WATER:
-                    printf("\033[94m≈ \033[0m");
-                    break;
-                case NENUPHAR:
-                    printf("\033[32mɞ \033[0m");
-                    break;
-                case WALL_ITEM:
-                    printf("\033[90m■ \033[0m");
-                    break;
-                case STONE:
-                    printf("\033[90m⧍ \033[0m");
-                    break;
-                case CHEST:
-                    printf("\033[33m⍟ \033[0m");
-                    break;
-                case DIRT:
-                    printf("\033[37m⏚ \033[0m");
-                    break;
-                case SAND:
-                    printf("\033[93m▦ \033[0m");
-                    break;
-                case LAVA:
-                    printf("\033[91m≈ \033[0m");
-                    break;
-                case PLAYER:
-                    printf("%s", player->emoji);
-                    break;
-                case MOB:
-                    printf("👹");
-                    break;
-                default:
-                    printf("%d ", map->data[i][j].value);
-                    break;
-                }
-            }
-            endofline++;
-            if (endofline == 5)
-            {
-                printf("\n");
-                endofline = 0;
-            }
-        }
-    }
-    map->data[player->coordX][player->coordY].value = blockToRewind;
-    for (int i = 0; i < nbMobs; i++)
-    {
-        map->data[mobs[i]->coordX][mobs[i]->coordY].value = blocksToRewind[i];
-    }
-    free(blocksToRewind);
 }

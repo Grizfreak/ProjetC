@@ -1,6 +1,7 @@
 #include "../headers/mob.h"
 #include <time.h>
 
+/* All character names */
 char *mobsNames[] = {
     /* Very Small mobs index 0 to 14 */
     "Raven",
@@ -59,19 +60,7 @@ char *mobsNames[] = {
     "Dark Dragon",
     "White Dragon"};
 
-void freeMobs(Mob **mobs, int nbMobs)
-{
-    for (int i = 0; i < nbMobs; i++)
-    {
-        if (mobs[i] != NULL)
-        {
-            free(mobs[i]);
-            mobs[i] = NULL;
-        }
-    }
-    free(mobs);
-}
-
+/* Function which generate one mob strength */
 int generateMobStrength()
 {
 
@@ -103,6 +92,7 @@ int generateMobStrength()
     }
 }
 
+/* Function which generate a mob name depending on the stregth passed as parameter */
 char *generateMobName(int strength)
 {
     int randomName = 0;
@@ -133,4 +123,18 @@ char *generateMobName(int strength)
     }
 
     return mobsNames[randomName];
+}
+
+/* Function which free the memory of the mobs */
+void freeMobs(Mob **mobs, int nbMobs)
+{
+    for (int i = 0; i < nbMobs; i++)
+    {
+        if (mobs[i] != NULL)
+        {
+            free(mobs[i]);
+            mobs[i] = NULL;
+        }
+    }
+    free(mobs);
 }

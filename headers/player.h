@@ -36,13 +36,14 @@ typedef struct Player
 void initPlayer(Player *player);
 
 /* Method which allow the player to attack a mob */
-void attack(Player *player, Mob *mob, int *nbMobsNotDead);
+void attack(Player *player, Mob *mob,int *nbMobsNotDead);
+/* Method which enable a mob to attack the player */
 void attackPlayer(Mob *mob, Player *player);
 
 /* Method which add an item to the players inventory */
 void addItemToInventory(Item *item, Player *player);
-
 /* Method which is used to display the inventory of the player */
 void displayPlayerInventory(Player *player);
 
+/* Method which check the xp of the player and set player level accordingly */
 void checkXp(Player *player);

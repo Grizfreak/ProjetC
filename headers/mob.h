@@ -9,6 +9,8 @@
 #define LARGE 503
 #define VERY_LARGE 504
 #define GIGANTIC 505
+
+/* Other const useful */
 #define TOTAL_NUMBER_OF_MOBS 50
 
 /* Struct of the monster */
@@ -23,6 +25,9 @@ typedef struct Mob
     int strength;
 } Mob;
 
-void freeMobs(Mob **mobs, int nbMobs);
+/* Function which generate one mob strength */
 int generateMobStrength();
+/* Function which generate a mob name depending on the stregth passed as parameter */
 char *generateMobName(int strength);
+/* Function which free the memory of the mobs */
+void freeMobs(Mob **mobs, int nbMobs);

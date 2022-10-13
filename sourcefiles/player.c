@@ -24,12 +24,15 @@ void attack(Player *player, Mob *mob, int *nbMobsNotDead)
     mob->pv -= player->attack;
     if (mob->pv <= 0)
     {
+
         mob->isDead = 1;
         *nbMobsNotDead -= 1;
+    } else {
+        printf("Mob %s now have %dpv\n", mob->name, mob->pv);
     }
-    printf("Mob %s now have %dpv\n", mob->name, mob->pv);
 }
 
+/* Method which enable a mob to attack the player */
 void attackPlayer(Mob *mob, Player *player)
 {
     printf("The %s is attacking the player with %d damages\n", mob->name, mob->attack);
@@ -37,8 +40,9 @@ void attackPlayer(Mob *mob, Player *player)
     if (player->pv <= 0)
     {
         player->isDead = 1;
+    } else {
+        printf("You now have %dpv\n", player->pv);
     }
-    printf("You now have %dpv\n", player->pv);
 }
 
 /* Method which add an item to the players inventory */
@@ -78,8 +82,8 @@ void displayPlayerInventory(Player *player)
     }
 }
 
-void checkXp(Player *player)
-{
+/* Method which check the xp of the player and set player level accordingly */
+void checkXp(Player *player){
 
     int level = (int)log2(player->currentXp);
 
@@ -89,5 +93,4 @@ void checkXp(Player *player)
     /* Regenerate player's life */
     player->pv = 100 + 5 * level;
 
-    printf("XP : %d", player->currentXp);
 }
